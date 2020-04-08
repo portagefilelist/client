@@ -49,7 +49,7 @@ if [ -t 1 ] && [ "$coloropt" = auto ];then
 	color=1
 fi
 
-URL="http://www.portagefilelist.de/site/query/filecsv?file=$1"
+URL="https://www.portagefilelist.de/site/query/filecsv?file=$1"
 
 curl -s -f $URL | awk -v isgentoo=$isgentoo -v color=$color '
 BEGIN{

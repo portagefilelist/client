@@ -26,7 +26,7 @@ if pwd.getpwuid(os.getuid())[0] == 'portage':
 else:
     INFOFILE = '%s/.pfl.info' % HOME;
 
-UPLOADURL='http://upload.portagefilelist.de/data.php'
+UPLOADURL='https://upload.portagefilelist.de/data.php'
 
 if DEBUG:
     import portage
