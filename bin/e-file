@@ -1,0 +1,179 @@
+#!/bin/sh
+#AUTHOR: bones7456 (bones7456<at>gmail<dot>com)
+#License: GPL
+#e-file is like apt-file in debian,it's used to search package name via filename for gentoo
+#thanks for portagefilelist.de and Daniel
+VERSION=20190713
+
+coloropt=always
+usage () {
+	echo "This is e-file ($VERSION)"
+	echo "Usage: $(basename ${0})   [-c] [-h] filename"
+	echo "  -c color output could be either [always|never|auto]"
+	echo "  -h Print help"
+	[ $# -eq 1 ] && exit $1 || exit 1
+}
+
+while getopts :c:h option;do
+	case $option in
+	c)	coloropt="$OPTARG";;
+	h)	usage 0;;
+	\?)	echo "Unknown option \"-$OPTARG\"."
+		usage 2;;
+	:)	echo "Option \"-$OPTARG\" needs an argument."
+		usage 2;;
+	*)	echo "How could this even happen..."
+		usage 10;;
+	esac
+done
+
+shift $(( OPTIND - 1 ))
+
+if [ $# -lt 1 ];then
+	echo "You need to pass one search term."
+	usage 2
+fi
+
+if type portageq >/dev/null 2>&1;then
+	isgentoo=1
+else
+	isgentoo=0
+	echo 'WARNING: "portageq" no found. If your system is not gentoo, a part of function will not available!' >&2
+fi
+
+color=0
+if [ "$coloropt" = always ];then
+	color=1
+fi
+if [ -t 1 ] && [ "$coloropt" = auto ];then
+	color=1
+fi
+
+URL="http://www.portagefilelist.de/site/query/filecsv?file=$1"
+
+curl -s -f $URL | awk -v isgentoo=$isgentoo -v color=$color '
+BEGIN{
+	FOUND=0
+	if(isgentoo){
+		"portageq get_repo_path $(portageq envvar EROOT) gentoo" | getline PORTDIR
+	}
+}
+{
+	if(NR!=1 && NF!=0){
+		T=1
+		split(vers[$1 "/" $2],vers_arr,/ /)
+		for(i in vers_arr){
+			if(vers_arr[i]==$NF){
+				T=0
+				break
+			}
+		}
+		if(T)vers[$1 "/" $2]=$NF " " vers[$1 "/" $2]
+		T=1
+		split(files[$1 "/" $2],files_arr,/; /)
+		for(i in files_arr){
+			if(files_arr[i]==($3 "/" $4)){
+				T=0
+				break
+			}
+		}
+		if(T)files[$1 "/" $2]=$3 "/" $4 "; " files[$1 "/" $2]
+		FOUND=1
+	}
+}
+END{
+	if(FOUND){
+		for(pkg in vers){
+			split(pkg,ii,/\//)
+			if(isgentoo){
+				NF=0
+				cmd="ls -tgGd --time-style=+%c /var/db/pkg/" pkg "* 2>/dev/null"
+				cmd | getline
+				if(NF==0){
+					installed=0
+				}else{
+					installed=1
+					install_time=""
+					for(i=4;i<NF;i++)install_time=install_time " " $i
+					install_time=substr(install_time,2)
+					split($NF,install_arr,pkg "-")
+				}
+				NF=0
+				cmd="(grep -h HOMEPAGE\\= " PORTDIR "/" pkg "/*.ebuild | tail -n 1)2>/dev/null"
+				cmd | getline
+				if(NF==0){
+					HOMEPAGE=""
+				}else{
+					split($0,tempArr,/"/)
+					HOMEPAGE=tempArr[2]
+				}
+				NF=0
+				cmd="(grep -h DESCRIPTION " PORTDIR "/" pkg "/*.ebuild | tail -n 1)2>/dev/null"
+				cmd | getline
+				if(NF==0){
+					DESCRIPTION=""
+				}else{
+					split($0,tempArr,/"/)
+					DESCRIPTION=tempArr[2]
+				}
+			}else{
+				installed=0
+				HOMEPAGE=""
+				DESCRIPTION=""
+			}
+
+			setcolor(1,32)
+			if(installed){
+				printf("[I] ")
+			}else{
+				printf(" *  ")
+			}
+			clearcolor()
+			printf("%s/",ii[1])
+			setcolor(1,29)
+			printf("%s\n",ii[2])
+			setcolor(0,32)
+			printf("\tAvailable Versions:\t")
+			cmd="echo " vers[pkg] " | tr \" \" \"\n\" | sort -V"
+			while ((cmd | getline) > 0)
+				printf("%s ",$0)
+			printf("\n")
+			if(installed){
+				printf("\tLast Installed Ver:\t")
+				setcolor(7,34)
+				printf("%s",install_arr[2])
+				setcolor(0,35)
+				printf("(%s)\n",install_time)
+				setcolor(0,32)
+			}
+			if(HOMEPAGE){
+				printf("\tHomepage:\t\t")
+				clearcolor()
+				printf("%s\n",HOMEPAGE)
+				setcolor(0,32)
+			}
+			if(DESCRIPTION){
+				printf("\tDescription:\t\t")
+				clearcolor()
+				printf("%s\n",DESCRIPTION)
+				setcolor(0,32)
+			}
+			printf("\tMatched Files:\t\t")
+			clearcolor()
+			printf("%s\n\n",files[pkg])
+		}
+	}else{
+		print "No matches found."
+	}
+}
+function setcolor(a,b){
+	if (color) {
+		printf("%c[%d;%dm",27,a,b)
+	}
+}
+function clearcolor(){
+	if (color) {
+		printf("%c[0m",27)
+	}
+}
+'

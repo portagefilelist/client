@@ -1,0 +1,2 @@
+#!/bin/sh
+setpriv --reuid=portage --regid=portage --clear-groups nice /usr/bin/pfl >/dev/null
