@@ -4,7 +4,7 @@ import sys
 import pfl.pfl
 
 def main():
-    pfl.pfl.PFL().do_job()
+    pfl.pfl.PFL().run()
 
 if __name__ == '__main__':
     sys.exit(main())
