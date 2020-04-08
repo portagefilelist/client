@@ -2,6 +2,7 @@
 import portage
 
 # xml
+from xml.sax.saxutils import escape
 import bz2
 
 # http
@@ -127,7 +128,7 @@ class PortageMangle(object):
 
                     self._write2file('<files>', '\n\t\t\t')
                     for f in contents:
-                        self._write2file('<file type="%s">%s</file>' % (contents[f][0], f), '\n\t\t\t\t')
+                        self._write2file('<file type="%s">%s</file>' % (contents[f][0], escape(f)), '\n\t\t\t\t')
                     self._write2file('</files>', '\n\t\t\t')
 
                     if len(us) > 0:
