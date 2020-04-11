@@ -1,0 +1,10 @@
+[Unit]
+Description=Portage File List upload
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/pfl
+
+[Install]
+WantedBy=multi-user.target
