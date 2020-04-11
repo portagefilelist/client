@@ -15,11 +15,12 @@ import pwd
 from tempfile import mkstemp
 import configparser
 from time import time
+import argparse
 
 # proxy
 import re
 
-VERSION = '3.0.1'
+VERSION = '3.0.2'
 HOME = os.getenv('HOME')
 DEBUG = os.path.exists(('%s/debugpfl' % HOME))
 if pwd.getpwuid(os.getuid())[0] == 'portage':
@@ -34,6 +35,18 @@ if DEBUG:
     print('Portage Version: ', portage.VERSION)
     UPLOADURL=("%s?test" % UPLOADURL)
 
+
+parser = argparse.ArgumentParser(description='This is the PFL upload script. \
+The purpose of this script is to collect the file names (not the content) of \
+all installed packages from the Gentoo repo and upload them to \
+portagefilelist.de. After some time your uploaded data will be imported into a \
+searchable database. Thus you will provide a way for other people to find a \
+package which contains a specific file/binary. Please visit \
+https://portagefilelist.de for further informations.', prog='pfl')
+
+parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + VERSION)
+
+args = parser.parse_args()
 
 class PortageMangle(object):
     _settings = None
@@ -193,7 +206,7 @@ class PFL(object):
                 else:
                     return int(self._config.get('PFL', 'lastrun', fallback=0))
 
-    def _do_job(self):
+    def run(self):
         pm = PortageMangle()
         
         xmlfile = pm.collect_into_xml(self._last_run())
@@ -224,14 +237,3 @@ class PFL(object):
                 return
 
         self._finish(xmlfile, True)
-
-    def run(self):
-        if (len(sys.argv) < 2):
-            self._do_job()
-        else:
-            print('This is the PFL upload script version %s\n' % VERSION)
-            print('The purpose of this script is to collect the file names (not the content) of all installed packages from the Gentoo repo and upload them to portagefilelist.de')
-            print('After some time your uploaded data will be imported into a searchable database. Thus you will provide a way for other people to find a package which contains a specific file/binary.\n')
-            print('Please visit https://portagefilelist.de for further informations.\n')
-            print('This script expects no arguments. If you want to start it just call it without any arguments.')
-            sys.exit(1)
