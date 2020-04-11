@@ -3,22 +3,17 @@ import portage
 
 # xml
 from xml.sax.saxutils import escape
-import bz2
 
 # http
 import requests
 
 import sys
 import os
-import io
 import pwd
 from tempfile import mkstemp
-import configparser
 from time import time
+import configparser
 import argparse
-
-# proxy
-import re
 
 VERSION = '3.0.2'
 HOME = os.getenv('HOME')
@@ -31,7 +26,6 @@ else:
 UPLOADURL='https://upload.portagefilelist.de/data.php'
 
 if DEBUG:
-    import portage
     print('Portage Version: ', portage.VERSION)
     UPLOADURL=("%s?test" % UPLOADURL)
 
