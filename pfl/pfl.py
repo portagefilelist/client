@@ -219,14 +219,8 @@ class PFL(object):
                 os.system('bzip2 %s' % xmlfile)
                 xmlfile = xmlfile + '.bz2'
                 print('uploading xml file %s to %s ...' % (xmlfile, UPLOADURL))
-                #h.post_multipart('upload.portagefilelist.de', '80', '/data.php', [], [('foo', xmlfile)])
                 files = {'foo': open(xmlfile, 'rb')}
-                proxies = {'http': os.environ.get('http_proxy')}
-                r = None
-                if proxies['http'] != None:
-                    r = requests.post(UPLOADURL, proxies=proxies, files=files)
-                else:
-                    r = requests.post(UPLOADURL, files=files)
+                r = requests.post(UPLOADURL, files=files)
 
                 if DEBUG and r != None:
                     print('HTTP Response Code: %d' % r.status_code);
