@@ -4,7 +4,7 @@ Description=weekly execute PFL upload script
 [Timer]
 OnCalendar=weekly
 Persistent=true
-RandomizedDelaySec=4d
+RandomizedDelaySec=1w
 
 [Install]
 WantedBy=timers.target
