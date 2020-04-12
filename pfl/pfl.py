@@ -15,7 +15,7 @@ from time import time
 import configparser
 import argparse
 
-VERSION = '3.0.2'
+VERSION = '3.1'
 HOME = os.getenv('HOME')
 DEBUG = os.path.exists(('%s/debugpfl' % HOME))
 if pwd.getpwuid(os.getuid())[0] == 'portage':
