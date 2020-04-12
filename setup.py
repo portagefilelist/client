@@ -2,7 +2,7 @@
 from distutils.core import setup
 setup(
 	name='pfl',
-	version='3.0.1',
+	version='3.1',
 	author='damage',
 	author_email='damage@devloop.de',
 	url='http://www.portagefilelist.de',
