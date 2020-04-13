@@ -6,8 +6,11 @@ import sys
 import json
 import portage
 
+from datetime import datetime
+
 # dev-python/termcolor
 from termcolor import colored
+import termcolor
 
 VERSION='3.1'
 BASEURL='https://portagefilelist.de/site/query/robotFile?file=%s'
@@ -50,44 +53,71 @@ if len(files['result']) > 0:
             cps[category][package]['versions'].append(version)
             cps[category][package]['files'].append(filepath)
 
+    vardbapi = portage.db['/']['vartree'].dbapi
+    portdbapi = portage.db['/']['porttree'].dbapi
     for category, packages in cps.items():
         for package, vf in packages.items():
-            vardbapi = portage.db['/']['vartree'].dbapi
-            print(vardbapi.cp_list('app-shells/bash'))
+            installed_cpvs = sorted(set(vardbapi.cp_list('%s/%s' % (category, package))))
+            available_cpvs = sorted(set(portdbapi.cp_list('%s/%s' % (category, package))))
+
+            installed = False
+            if len(installed_cpvs) > 0:
+                installed = True
 
             # *  category/package
             #[I] category/package
-            installed = False
             if installed:
                 sys.stdout.write(colored('[I] ', 'green'))
             else:
                 sys.stdout.write(colored(' *  ', 'green'))
             sys.stdout.write('%s/%s\n' % (category, package))
 
-            #        Available Versions:     X.Y A.B
+            #        Seen Versions:          X.Y A.B
             versions = sorted(set(vf['versions']))
-            sys.stdout.write(colored('        Available Versions:     %s\n' % ' '.join(versions), 'green'))
+            sys.stdout.write(colored('        Seen Versions:          %s\n' % ' '.join(versions), 'green'))
 
+            #        Portage Versions:       X.Y A.B
+            #versions = sorted(set(vf['versions']))
+            sys.stdout.write(colored('        Portage Versions:       ', 'green'))
+            for available_cpv in available_cpvs:
+                sys.stdout.write(colored('%s ' % portage.versions.cpv_getversion(available_cpv), 'green'))
+            sys.stdout.write('\n')
+
+            # old:
             #        Last Installed Ver:     X.Y(Thu Apr 2 01:01:19 2020)
+            # new:
+            #        Installed Versions:     X.Y(Thu Apr 2 01:01:19 2020)
             if installed:
-                sys.stdout.write(colored('        Last Installed Ver:     ', 'green'))
-                sys.stdout.write(colored('X.Y', 'grey', 'on_blue'))
-                sys.stdout.write(colored('(Thu Apr 2 01:01:19 2020)\n', 'magenta'))
+                sys.stdout.write(colored('        Installed Versions:     ', 'green'))
+                for installed_cpv in installed_cpvs:
+                    build_time, homepage = vardbapi.aux_get(installed_cpv, ['BUILD_TIME', 'HOMEPAGE'])
+                    try:
+                        build_time = build_time = int(build_time.strip())
+                    except ValueError:
+                        build_time = 0
 
-            #        Homepage:               http://example.org
-            sys.stdout.write(colored('        Homepage:               ', 'green'))
-            sys.stdout.write('http://example.org\n')
+                    sys.stdout.write(colored(portage.versions.cpv_getversion(installed_cpv), 'grey', 'on_blue'))
+                    sys.stdout.write(colored(datetime.utcfromtimestamp(build_time).strftime('(%c) '), 'magenta'))
 
-            #        Description:            package description
-            sys.stdout.write(colored('        Description:            ', 'green'))
-            sys.stdout.write('description from portage\n')
+                sys.stdout.write('\n')
 
-            #        Matched Files:          /the/found/file; XXX multiple files?
+            if len(available_cpvs) > 0:
+                description, homepage = portdbapi.aux_get(available_cpvs[-1], ['DESCRIPTION', 'HOMEPAGE'])
+
+                #        Homepage:               http://example.org
+                sys.stdout.write(colored('        Homepage:               ', 'green'))
+                sys.stdout.write('%s\n' % homepage)
+
+                #        Description:            package description
+                sys.stdout.write(colored('        Description:            ', 'green'))
+                sys.stdout.write('%s\n' % description)
+
+            #        Matched Files:          /the/found/file; /another/found/file;
             files = sorted(set(vf['files']))
             sys.stdout.write(colored('        Matched Files:          ', 'green'))
             sys.stdout.write('%s\n' % '; '.join(files))
 
-            print('')
+            sys.stdout.write('\n')
 
 else:
     print('No matches found.')
