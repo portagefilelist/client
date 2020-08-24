@@ -1,2 +1,8 @@
 #!/bin/sh
+
+if [ -e /bin/systemctl ] && /bin/systemctl is-enabled --quiet pfl.timer; then
+	# Do not run pfl via cron if the respective systemd timer is enabled.
+	exit
+fi
+
 setpriv --reuid=portage --regid=portage --clear-groups nice /usr/bin/pfl >/dev/null
