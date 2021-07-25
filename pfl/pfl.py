@@ -91,14 +91,14 @@ class PortageMangle(object):
         os.write(self._xmlfile[0], bytes(txt, 'UTF-8'))
 
     def collect_into_xml(self, since):
-        self._xmlfile = mkstemp('.xml', 'pfl')
-
         count, cpvs = self.get_wellknown_cpvs(since)
         
         # nothing to do
         if count == 0:
             return None
         
+        self._xmlfile = mkstemp('.xml', 'pfl')
+
         print('writing xml file %s ...' % self._xmlfile[1])
         self._write2file('<?xml version="1.0" encoding="UTF-8"?>')
         self._write2file('<pfl xmlns="http://www.portagefilelist.de/xsd/collect">', '\n')
