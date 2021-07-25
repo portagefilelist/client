@@ -4,6 +4,8 @@ After=network.target
 
 [Service]
 Type=oneshot
+User=portage
+Group=portage
 ExecStart=/usr/bin/pfl
 
 [Install]
