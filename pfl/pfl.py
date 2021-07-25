@@ -15,8 +15,8 @@ from time import time
 import configparser
 import argparse
 
-VERSION = '3.1'
-HOME = os.getenv('HOME')
+VERSION = '3.2'
+HOME = os.path.expanduser("~")
 DEBUG = os.path.exists(('%s/debugpfl' % HOME))
 if pwd.getpwuid(os.getuid())[0] == 'portage':
     INFOFILE = '/var/lib/pfl/pfl.info'
