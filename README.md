@@ -12,4 +12,4 @@ It also provides a tool for searching PFL from CLI (e-file).
 As Gentoo has a source code based package system you cannot predict the binary files created by a package. Thus you might have trouble to find the package which provides a specific binary. E.g. the command `host` is provided by the package `bind-tools`. [Try it](https://portagefilelist.de/site/query/file/?file=host&unique_packages=yes&do).
 
 ### How?
-Just execute `pfl` our use the network-cron useflag which installs a weekly executed cronjob. Systemd timer are currently not supported but planned.
+Just execute `pfl` or use the network-cron useflag which installs a weekly executed cronjob. Systemd timer are currently not supported but planned.
