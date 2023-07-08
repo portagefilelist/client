@@ -12,4 +12,4 @@ It also provides a tool for searching PFL from CLI (e-file).
 As Gentoo has a source code based package system you cannot predict the binary files created by a package. Thus you might have trouble to find the package which provides a specific binary. E.g. the command `brctl` is provided by the package `net-misc/bridge-utils`. [Try it](https://www.portagefilelist.de/index.php?fs=brctl&unique=1).
 
 ### How?
-Just execute `pfl` our use the network-cron useflag which installs a weekly executed cronjob. Systemd timer are currently not supported but planned.
+Just execute `pfl` or use the network-cron useflag which installs a weekly executed cronjob. Systemd timer are currently not supported but planned.
