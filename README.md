@@ -4,7 +4,7 @@ This are the client scripts used by Portage File List (PFL) to upload file names
 It also provides a tool for searching PFL from CLI (e-file).
 
 ## Install
-`# emerge pfl`
+`# emerge app-portage/pfl`
 
 ## Upload installed packages
 
