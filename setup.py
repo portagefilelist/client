@@ -2,7 +2,7 @@
 from distutils.core import setup
 setup(
 	name='pfl',
-	version='3.1',
+	version='3.2',
 	author='damage',
 	author_email='damage@devloop.de',
 	url='http://www.portagefilelist.de',
@@ -18,4 +18,5 @@ setup(
 		'License :: OSI Approved :: GNU General Public License v2',
 		],
 	scripts = ['bin/e-file', 'bin/pfl'],
+	data_files = [('share/man/man1', ['man/pfl.1'])],
 	)
