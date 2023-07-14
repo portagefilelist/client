@@ -12,11 +12,11 @@ from datetime import datetime
 from termcolor import colored
 import termcolor
 
-VERSION='3.1'
-BASEURL='https://portagefilelist.de/site/query/robotFile?file=%s'
+VERSION='3.2.1'
+BASEURL='https://www.portagefilelist.de/query.php?file=%s'
 
 parser = argparse.ArgumentParser(description='This script searches on \
-https://portagefilelist.de for the given file and displays the result \
+https://www.portagefilelist.de for the given file and displays the result \
 with further informations from local portage', prog='e-file')
 
 parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + VERSION)
@@ -25,100 +25,117 @@ args = parser.parse_args()
 
 try:
     r = requests.get(BASEURL % args.file)
-    if r == None:
-            raise Exception('Unknown error')
-    elif r.status_code != 200:
-            raise Exception('Got response (%d): %s' % (r.status_code, r.text))
-except Exception as e:
-    sys.stderr.write('Error searching file: %s\n' % e)
+    r.raise_for_status()
+except requests.exceptions.HTTPError as e:
+    print ("An HTTP error occured")
+    raise SystemExit(e)
+except requests.exceptions.ConnectionError as e:
+    print ("An connection error occured")
+    raise SystemExit(e)
+except requests.exceptions.Timeout as e:
+    print ("Timeout")
+    raise SystemExit(e)
+except requests.exceptions.RequestException as e:
+    print ("Something went totally wrong with the request")
+    raise SystemExit(e)
 
-files = json.loads(r.text)
-if len(files['result']) > 0:
-    cps = {}
-    for file in files['result']:
-        category = file['category']
-        package = file['package']
-        version = file['version']
-        filepath = '%s/%s' % (file['path'], file['file'])
+resultJson = json.loads(r.text)
 
-        if not category in cps:
-            cps[category] = {}
+if 'error' in resultJson:
+    print (resultJson['error']['code'])
+    print (resultJson['error']['message'])
+    sys.exit(1)
+elif 'result' in resultJson:
+    if len(resultJson['result']) > 0:
+        cps = {}
+        for file in resultJson['result']:
+            category = file['category']
+            package = file['package']
+            version = file['version']
+            filepath = file['path']
 
-        if not package in cps[category]:
-            cps[category][package] = {
-                    'versions': [version],
-                    'files': [filepath]
-                    }
-        else:
-            cps[category][package]['versions'].append(version)
-            cps[category][package]['files'].append(filepath)
+            if not category in cps:
+                cps[category] = {}
 
-    vardbapi = portage.db['/']['vartree'].dbapi
-    portdbapi = portage.db['/']['porttree'].dbapi
-    for category, packages in cps.items():
-        for package, vf in packages.items():
-            installed_cpvs = sorted(set(vardbapi.cp_list('%s/%s' % (category, package))))
-            available_cpvs = sorted(set(portdbapi.cp_list('%s/%s' % (category, package))))
-
-            installed = False
-            if len(installed_cpvs) > 0:
-                installed = True
-
-            # *  category/package
-            #[I] category/package
-            if installed:
-                sys.stdout.write(colored('[I] ', 'green'))
+            if not package in cps[category]:
+                cps[category][package] = {
+                        'versions': [version],
+                        'files': [filepath]
+                        }
             else:
-                sys.stdout.write(colored(' *  ', 'green'))
-            sys.stdout.write('%s/%s\n' % (category, package))
+                cps[category][package]['versions'].append(version)
+                cps[category][package]['files'].append(filepath)
 
-            #        Seen Versions:          X.Y A.B
-            versions = sorted(set(vf['versions']))
-            sys.stdout.write(colored('        Seen Versions:          %s\n' % ' '.join(versions), 'green'))
+        vardbapi = portage.db['/']['vartree'].dbapi
+        portdbapi = portage.db['/']['porttree'].dbapi
+        for category, packages in cps.items():
+            for package, vf in packages.items():
+                installed_cpvs = sorted(set(vardbapi.cp_list('%s/%s' % (category, package))))
+                available_cpvs = sorted(set(portdbapi.cp_list('%s/%s' % (category, package))))
 
-            #        Portage Versions:       X.Y A.B
-            #versions = sorted(set(vf['versions']))
-            sys.stdout.write(colored('        Portage Versions:       ', 'green'))
-            for available_cpv in available_cpvs:
-                sys.stdout.write(colored('%s ' % portage.versions.cpv_getversion(available_cpv), 'green'))
-            sys.stdout.write('\n')
+                installed = False
+                if len(installed_cpvs) > 0:
+                    installed = True
 
-            # old:
-            #        Last Installed Ver:     X.Y(Thu Apr 2 01:01:19 2020)
-            # new:
-            #        Installed Versions:     X.Y(Thu Apr 2 01:01:19 2020)
-            if installed:
-                sys.stdout.write(colored('        Installed Versions:     ', 'green'))
-                for installed_cpv in installed_cpvs:
-                    build_time, homepage = vardbapi.aux_get(installed_cpv, ['BUILD_TIME', 'HOMEPAGE'])
-                    try:
-                        build_time = build_time = int(build_time.strip())
-                    except ValueError:
-                        build_time = 0
+                # *  category/package
+                #[I] category/package
+                if installed:
+                    sys.stdout.write(colored('[I] ', 'green'))
+                else:
+                    sys.stdout.write(colored(' *  ', 'green'))
+                sys.stdout.write('%s/%s\n' % (category, package))
 
-                    sys.stdout.write(colored(portage.versions.cpv_getversion(installed_cpv), 'grey', 'on_blue'))
-                    sys.stdout.write(colored(datetime.utcfromtimestamp(build_time).strftime('(%c) '), 'magenta'))
+                #        Seen Versions:          X.Y A.B
+                versions = sorted(set(vf['versions']))
+                sys.stdout.write(colored('        Seen Versions:          %s\n' % ' '.join(versions), 'green'))
+
+                #        Portage Versions:       X.Y A.B
+                #versions = sorted(set(vf['versions']))
+                sys.stdout.write(colored('        Portage Versions:       ', 'green'))
+                for available_cpv in available_cpvs:
+                    sys.stdout.write(colored('%s ' % portage.versions.cpv_getversion(available_cpv), 'green'))
+                sys.stdout.write('\n')
+
+                # old:
+                #        Last Installed Ver:     X.Y(Thu Apr 2 01:01:19 2020)
+                # new:
+                #        Installed Versions:     X.Y(Thu Apr 2 01:01:19 2020)
+                if installed:
+                    sys.stdout.write(colored('        Installed Versions:     ', 'green'))
+                    for installed_cpv in installed_cpvs:
+                        build_time, homepage = vardbapi.aux_get(installed_cpv, ['BUILD_TIME', 'HOMEPAGE'])
+                        try:
+                            build_time = build_time = int(build_time.strip())
+                        except ValueError:
+                            build_time = 0
+
+                        sys.stdout.write(colored(portage.versions.cpv_getversion(installed_cpv), 'grey', 'on_blue'))
+                        sys.stdout.write(colored(datetime.utcfromtimestamp(build_time).strftime('(%c) '), 'magenta'))
+
+                    sys.stdout.write('\n')
+
+                if len(available_cpvs) > 0:
+                    description, homepage = portdbapi.aux_get(available_cpvs[-1], ['DESCRIPTION', 'HOMEPAGE'])
+
+                    #        Homepage:               http://example.org
+                    sys.stdout.write(colored('        Homepage:               ', 'green'))
+                    sys.stdout.write('%s\n' % homepage)
+
+                    #        Description:            package description
+                    sys.stdout.write(colored('        Description:            ', 'green'))
+                    sys.stdout.write('%s\n' % description)
+
+                #        Matched Files:          /the/found/file; /another/found/file;
+                files = sorted(set(vf['files']))
+                sys.stdout.write(colored('        Matched Files:          ', 'green'))
+                sys.stdout.write('%s\n' % '; '.join(files))
 
                 sys.stdout.write('\n')
 
-            if len(available_cpvs) > 0:
-                description, homepage = portdbapi.aux_get(available_cpvs[-1], ['DESCRIPTION', 'HOMEPAGE'])
-
-                #        Homepage:               http://example.org
-                sys.stdout.write(colored('        Homepage:               ', 'green'))
-                sys.stdout.write('%s\n' % homepage)
-
-                #        Description:            package description
-                sys.stdout.write(colored('        Description:            ', 'green'))
-                sys.stdout.write('%s\n' % description)
-
-            #        Matched Files:          /the/found/file; /another/found/file;
-            files = sorted(set(vf['files']))
-            sys.stdout.write(colored('        Matched Files:          ', 'green'))
-            sys.stdout.write('%s\n' % '; '.join(files))
-
-            sys.stdout.write('\n')
-
+    else:
+        print('Empty result list return. This should not happend.')
+        sys.exit(1)
 else:
-    print('No matches found.')
+    print('Something went wrong with the request result.')
+    print (resultJson)
     sys.exit(1)

@@ -15,7 +15,7 @@ from time import time
 import configparser
 import argparse
 
-VERSION = '3.2'
+VERSION = '3.2.1'
 HOME = os.path.expanduser("~")
 DEBUG = os.path.exists(('%s/debugpfl' % HOME))
 if pwd.getpwuid(os.getuid())[0] == 'portage':
@@ -23,7 +23,7 @@ if pwd.getpwuid(os.getuid())[0] == 'portage':
 else:
     INFOFILE = '%s/.pfl.info' % HOME;
 
-UPLOADURL='https://upload.portagefilelist.de/data.php'
+UPLOADURL='https://www.portagefilelist.de/data.php'
 
 if DEBUG:
     print('Portage Version: ', portage.VERSION)
@@ -36,7 +36,7 @@ all installed packages from the Gentoo repo and upload them to \
 portagefilelist.de. After some time your uploaded data will be imported into a \
 searchable database. Thus you will provide a way for other people to find a \
 package which contains a specific file/binary. Please visit \
-https://portagefilelist.de for further informations.', prog='pfl')
+https://www.portagefilelist.de for further informations.', prog='pfl')
 
 parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + VERSION)
 

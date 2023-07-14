@@ -2,11 +2,9 @@
 from distutils.core import setup
 setup(
 	name='pfl',
-	version='3.2',
-	author='damage',
-	author_email='damage@devloop.de',
-	url='http://www.portagefilelist.de',
-	download_url='http://files.portagefilelist.de',
+	version='3.2.1',
+	author='Banana',
+	author_email='mail@bananas-playground.net',
 	description='Searchable online file/package database for Gentoo.',
 	packages = ['pfl'],
 	keywords='gentoo',
