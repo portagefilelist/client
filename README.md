@@ -15,4 +15,4 @@ Thus you might have trouble to find the package which provides a specific binary
 provided by the package `net-misc/bridge-utils`. [Try it](https://www.portagefilelist.de/index.php?fs=brctl&unique=1).
 
 ### How?
-Just execute `pfl` or use the network-cron useflag which installs a weekly executed cronjob. Systemd timer are currently not supported but planned.
+Just execute `pfl` or use the network-cron useflag which installs a weekly executed cronjob. 
