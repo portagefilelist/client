@@ -63,3 +63,9 @@ $ e-file apache2ct*
         Description:            Programmable Completion for bash
         Matched Files:          /usr/share/bash-completion/completions/apache2ctl/apache2ctl
 ```
+
+The e-file does only provide searching for packages with a given filename. More options are available with the browser search.
+
+## Browser Search
+
+Searching through the user provided uploads for a package, package itself and categories can be done [at the website itself](https://www.portagefilelist.de/)
