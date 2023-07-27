@@ -16,5 +16,8 @@ setup(
 		'License :: OSI Approved :: GNU General Public License v2',
 		],
 	scripts = ['bin/e-file', 'bin/pfl'],
-	data_files = [('share/man/man1', ['man/pfl.1'])],
-	)
+	data_files = [
+		('share/man/man1', ['man/pfl.1']),
+		('share/man/man1', ['man/e-file.1'])
+	],
+)
