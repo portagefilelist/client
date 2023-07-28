@@ -1,0 +1,36 @@
+pfl-3.2.x TBD
+
++ Added man file for e-file
++ Updated description texts
++ Added CHANGELOG and VERSION
+
+
+pfl-3.2.1 2023-07-18
+
++ Under new management
++ Created pfl.1 by @JensKorte in #19
+* Update README.md by @JensKorte in #17
+* Update setup.py by @billie80 in #23
+* Update e-file @bananas-repos
+
+
+pfl-3.2 2021-10-06
+
++ python version of e-file (#7, #8)
+* Not using HOME (#10)
+* empty temp files not removed (#12)
+* run pfl script as user/group portage
+
+
+pfl-3.1 2020-04-12
+
++ HTTPS support (#3)
++ IPv6 support (#2)
++ Documentation (#5)
++ systemd Timer (#4)
+* wrong xml encoding in file names (#1)
+
+
+ pfl-3.0.1-r1 2020-04-08
+
++ Init version pfl-3.0.1-r1

@@ -24,7 +24,8 @@ Just make sure to use either of the crons.
 
 ## CLI Search
 
-The package does provide a cli command `e-file` to execute a search in your terminal.`$ e-file [-h] [-v] file`
+The package does provide a cli command `e-file` to execute a search in your terminal.
+`$ e-file [-h] [-v] file`
 
 Example: `$ e-file brctl` results in
 
@@ -68,4 +69,4 @@ The e-file does only provide searching for packages with a given filename. More 
 
 ## Browser Search
 
-Searching through the user provided uploads for a package, package itself and categories can be done [at the website itself](https://www.portagefilelist.de/)
+Searching through the user provided uploads for a package, package itself and categories can be done [at the website itself](https://www.portagefilelist.de/).
