@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from distutils.core import setup
+from setuptools import setup
 setup(
 	name='pfl',
 	version='3.2.1',
