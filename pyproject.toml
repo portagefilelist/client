@@ -12,10 +12,10 @@ description = "Searchable online file/package database for Gentoo."
 keywords = ["gentoo"]
 classifiers = [
     "Natural Language :: English",
-    "Operating System :: GNU/Linux",
+    "Topic :: System :: Operating System Kernels :: Linux",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
-    "License :: OSI Approved :: GNU General Public License v2",
+    "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
 ]
 license = {text = "GNU General Public License v2"}
 dependencies = [
