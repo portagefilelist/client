@@ -49,11 +49,12 @@ class PortageMangle(object):
     _xmlfile = None
 
     def __init__(self):
-        if '/' in portage.db:
-            self._settings = portage.db['/']['vartree'].settings
-            self._vardbapi = portage.db['/']['vartree'].dbapi
+        eroot = portage.settings['EROOT']
+        if eroot in portage.db:
+            self._settings = portage.db[eroot]['vartree'].settings
+            self._vardbapi = portage.db[eroot]['vartree'].dbapi
         else:
-            raise Exception('Tree "/" not present.')
+            raise Exception(f'Tree "{eroot}" not present.')
 
     def get_wellknown_cpvs(self, since):
         # category, package, version of all installed packages
