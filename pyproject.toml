@@ -13,7 +13,8 @@ keywords = ["gentoo"]
 classifiers = [
     "Natural Language :: English",
     "Operating System :: GNU/Linux",
-    "Programming Language :: Python :: 3.5",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "License :: OSI Approved :: GNU General Public License v2",
 ]
 license = {text = "GNU General Public License v2"}
