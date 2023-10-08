@@ -68,8 +68,9 @@ elif 'result' in resultJson:
                 cps[category][package]['versions'].append(version)
                 cps[category][package]['files'].append(filepath)
 
-        vardbapi = portage.db['/']['vartree'].dbapi
-        portdbapi = portage.db['/']['porttree'].dbapi
+        eroot = portage.settings['EROOT']
+        vardbapi = portage.db[eroot]['vartree'].dbapi
+        portdbapi = portage.db[eroot]['porttree'].dbapi
         for category, packages in cps.items():
             for package, vf in packages.items():
                 installed_cpvs = sorted(set(vardbapi.cp_list('%s/%s' % (category, package))))
