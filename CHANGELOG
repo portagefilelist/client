@@ -3,6 +3,8 @@ pfl-3.2.x TBD
 + Added man file for e-file
 + Updated description texts
 + Added CHANGELOG and VERSION
++ Move to setuptools and PEP517 (thx to https://github.com/parona-source)
++ Use EROOT for determining root (thx to https://github.com/parona-source)
 
 
 pfl-3.2.1 2023-07-18
