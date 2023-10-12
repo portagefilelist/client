@@ -29,4 +29,4 @@ packages = ["pfl"]
 script-files = ["bin/e-file", "bin/pfl"]
 
 [tool.setuptools.data-files]
-"share/man/man1" = ["man/pfl.1"]
+"share/man/man1" = ["man/e-file.1","man/pfl.1"]
