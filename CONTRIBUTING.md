@@ -11,13 +11,13 @@ Always write a clear log message for your commits. One-line messages are fine fo
 
 ## Did you find a bug?
 
-* Use the [master branch][masterbranch] as a base for your pull request
+* Use the [master branch][masterbranch] as a base for your pull request.
 * **Ensure the bug was not already reported** by searching on GitHub under [Issues](https://github.com/portagefilelist/client/issues).
 * If you're unable to find an open issue addressing the problem, [open a new one](https://github.com/portagefilelist/client/issues/new). Be sure to include a **title and clear description**, as much relevant information as possible, and a **code sample** or an **executable test case** demonstrating the expected behavior that is not occurring.
 
 ## Did you write a patch that fixes a bug?
 
-* Use the [master branch][masterbranch] as a base for your pull request
+* Use the [master branch][masterbranch] as a base for your pull request.
 * Open a new GitHub pull request with the patch.
 * Ensure the PR description clearly describes the problem and solution. Include the relevant issue number if applicable.
 
@@ -34,7 +34,7 @@ will generally not be accepted.
 
 ## Coding conventions
 
-Start reading our code and you'll get the hang of it. The code is optimized for readability.
+Start reading the code and you'll get the hang of it. The code is optimized for readability.
 
 [masterbranch]: https://github.com/portagefilelist/client/tree/master
 [developbranch]: https://github.com/portagefilelist/client/tree/develop
