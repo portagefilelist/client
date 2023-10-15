@@ -1,4 +1,4 @@
-# How to contribute to pfl
+# How to contribute to PFL client
 
 This project does use the [master branch][masterbranch] as the currently released version.
 The [develop branch][developbranch] is the main branch for improvements and workplace for a future version.
@@ -19,7 +19,7 @@ Always write a clear log message for your commits. One-line messages are fine fo
 
 * Use the [master branch][masterbranch] as a base for your pull request.
 * Open a new GitHub pull request with the patch.
-* Ensure the PR description clearly describes the problem and solution. Include the relevant issue number if applicable.
+* Ensure the pull request description clearly describes the problem and solution. Include the relevant issue number if applicable.
 
 ## Did you fix whitespace, format code, or make a purely cosmetic patch?
 
