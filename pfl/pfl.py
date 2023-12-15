@@ -214,7 +214,7 @@ class PFL(object):
                 r = requests.post(UPLOADURL, files=files)
 
                 print('HTTP Response Code: %d' % r.status_code)
-                print('HTTP Response Body:\n%s' % r.text)
+                print('HTTP Response Body: %s' % r.text)
             except Exception as e:
                 sys.stderr.write("%s\n" % e)
                 self._finish(xmlfile, False)

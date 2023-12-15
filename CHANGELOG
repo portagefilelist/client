@@ -1,6 +1,6 @@
 pfl-3.2.x TBD
 
-+ Added pretend [-p|--pretend] option. Data will be collected to be viewed, but not uploaded.
++ Added pretend [-p|--pretend] option. Data will be collected to be viewed, but not uploaded. #33
 + Added man file for e-file
 + Updated description texts
 + Added CHANGELOG and VERSION
