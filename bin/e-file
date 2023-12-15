@@ -113,7 +113,7 @@ elif 'result' in resultJson:
                             build_time = 0
 
                         sys.stdout.write(colored(portage.versions.cpv_getversion(installed_cpv), 'grey', 'on_blue'))
-                        sys.stdout.write(colored(datetime.utcfromtimestamp(build_time).strftime('(%c) '), 'magenta'))
+                        sys.stdout.write(colored(datetime.fromtimestamp(build_time).strftime('(%c) '), 'magenta'))
 
                     sys.stdout.write('\n')
 
