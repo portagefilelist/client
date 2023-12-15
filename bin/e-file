@@ -18,11 +18,12 @@ BASEURL='https://www.portagefilelist.de/query.php?file=%s'
 parser = argparse.ArgumentParser(description='This script searches on \
 https://www.portagefilelist.de for the given filename(slice.hpp) or \
 path(/usr/include/exiv2/slice.hpp) and displays the result \
-with further informations from local portage. \
+with further information from local portage. \
 Using * as a wildcard (slice.*) (/usr/include/exiv2/*) works too.', prog='e-file')
 
-parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + VERSION)
-parser.add_argument('file', help='filename or path to search for')
+parser.add_argument('-h', '--help', action='help', help='Show this help message and exit.')
+parser.add_argument('-v', '--version', action='version', version='e-file ' + VERSION)
+parser.add_argument('file', help='Filename or path to search for.')
 args = parser.parse_args()
 
 try:

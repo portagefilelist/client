@@ -5,6 +5,7 @@ pfl-3.2.x TBD
 + Added CHANGELOG and VERSION
 + Move to setuptools and PEP517 (thx to https://github.com/parona-source)
 + Use EROOT for determining root (thx to https://github.com/parona-source)
++ Use fromtimestamp instead of utcfromtimestamp (thx to https://github.com/parona-source)
 
 
 pfl-3.2.1 2023-07-18
