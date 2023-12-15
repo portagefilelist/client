@@ -17,7 +17,6 @@ import argparse
 
 VERSION = '3.2.1'
 HOME = os.path.expanduser("~")
-DEBUG = os.path.exists(('%s/debugpfl' % HOME))
 # if it is run as cron and portage use. Otherwise use current user HOME
 if pwd.getpwuid(os.getuid())[0] == 'portage':
     INFOFILE = '/var/lib/pfl/pfl.info'
@@ -26,24 +25,22 @@ else:
 
 UPLOADURL='https://www.portagefilelist.de/data.php'
 
-if DEBUG:
-    print('Portage Version: ', portage.VERSION)
-    UPLOADURL=("%s?test" % UPLOADURL)
-
-
 parser = argparse.ArgumentParser(description='This is the PFL upload script. \
 The purpose of this script is to collect the file names (not the content) of \
 all installed packages from the Gentoo repo and upload them to \
 portagefilelist.de. After some time your uploaded data will be imported into a \
 searchable database. Thus you will provide a way for other people to find a \
 package which contains a specific file/binary. Please visit \
-https://www.portagefilelist.de for further information.', prog='pfl')
+https://www.portagefilelist.de for further information.', add_help=False)
 
 parser.add_argument('-h', '--help', action='help', help='Show this help message and exit.')
 parser.add_argument('-v', '--version', action='version', version='pfl ' + VERSION, help='Show version number and exit.')
 parser.add_argument('-p', '--pretend', action='store_true', help='Collect the data only and do not upload or change \
 the last run value.')
 args = parser.parse_args()
+
+if args.pretend:
+    print('Pretend mode. Data will be build and left to view. Nothing will be uploaded.')
 
 class PortageMangle(object):
     _settings = None
@@ -89,7 +86,7 @@ class PortageMangle(object):
         return dbl.getcontents()
 
     def _write2file(self, txt, indent=None):
-        if DEBUG and indent != None:
+        if args.pretend and indent != None:
             os.write(self._xmlfile[0], bytes(indent, 'UTF-8'))
 
         os.write(self._xmlfile[0], bytes(txt, 'UTF-8'))
@@ -165,14 +162,11 @@ class PFL(object):
         self._read_config()
 
     def _finish(self, xmlfile, success = True):
-        if success:
+        if success and not args.pretend:
             if not self._config.has_section('PFL'):
                 self._config.add_section('PFL')
 
-            if DEBUG:
-                self._config.set('PFL', 'lastrun', '0')
-            else:
-                self._config.set('PFL', 'lastrun', str(int(time())))
+            self._config.set('PFL', 'lastrun', str(int(time())))
             self._config.set('PFL', 'version', VERSION)
 
             hconfig = open(INFOFILE, 'w')
@@ -180,8 +174,8 @@ class PFL(object):
             hconfig.close()
 
         if xmlfile and os.path.isfile(xmlfile):
-            if DEBUG:
-                print('manually check xml file %s' % xmlfile);
+            if args.pretend:
+                print('Pretend mode. Keeping %s' % xmlfile)
             else:
                 print('deleting xml file %s ...' % xmlfile)
                 os.unlink(xmlfile)
@@ -199,10 +193,7 @@ class PFL(object):
                 print('new PFL version - I will collect all packages')
                 return 0
             else:
-                if DEBUG:
-                    return 0
-                else:
-                    return int(self._config.get('PFL', 'lastrun', fallback=0))
+                return int(self._config.get('PFL', 'lastrun', fallback=0))
 
     def run(self):
         pm = PortageMangle()
@@ -211,6 +202,8 @@ class PFL(object):
 
         if xmlfile == None:
             print('nothing to collect. If this is wrong, set PFL/lastrun in %s to 0' % INFOFILE)
+        elif args.pretend:
+            print('Pretend mode. Nothing to upload.')
         else:
             curversion = None
             try:
@@ -220,9 +213,8 @@ class PFL(object):
                 files = {'foo': open(xmlfile, 'rb')}
                 r = requests.post(UPLOADURL, files=files)
 
-                if DEBUG and r != None:
-                    print('HTTP Response Code: %d' % r.status_code)
-                    print('HTTP Response Body:\n%s' % r.text)
+                print('HTTP Response Code: %d' % r.status_code)
+                print('HTTP Response Body:\n%s' % r.text)
             except Exception as e:
                 sys.stderr.write("%s\n" % e)
                 self._finish(xmlfile, False)
