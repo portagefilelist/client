@@ -1,6 +1,7 @@
-pfl-3.2.x TBD
+pfl-3.3 TBD
 
 + Added pretend [-p|--pretend] option. Data will be collected to be viewed, but not uploaded. #33
++ Added the ability to provide a package atom [-a|--atom] to upload only the provided package. #13
 + Added man file for e-file
 + Updated description texts
 + Added CHANGELOG and VERSION

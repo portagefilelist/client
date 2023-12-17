@@ -15,7 +15,7 @@ from time import time
 import configparser
 import argparse
 
-VERSION = '3.2.1'
+VERSION = '3.3'
 HOME = os.path.expanduser("~")
 # if it is run as cron and portage use. Otherwise use current user HOME
 if pwd.getpwuid(os.getuid())[0] == 'portage':
@@ -33,15 +33,29 @@ searchable database. Thus you will provide a way for other people to find a \
 package which contains a specific file/binary. Please visit \
 https://www.portagefilelist.de for further information.', add_help=False)
 
+parser.add_argument('-p', '--pretend', action='store_true', help='Collect data only and do not upload or change \
+the last run value.')
+parser.add_argument('-a', '--atom', action='store', help='Update only for given atom.')
 parser.add_argument('-h', '--help', action='help', help='Show this help message and exit.')
 parser.add_argument('-v', '--version', action='version', version='pfl ' + VERSION, help='Show version number and exit.')
-parser.add_argument('-p', '--pretend', action='store_true', help='Collect the data only and do not upload or change \
-the last run value.')
+
 args = parser.parse_args()
 
 if args.pretend:
     print('Pretend mode. Data will be build and left to view. Nothing will be uploaded.')
 
+# if only one specific package should be updated, check if the syntax is correct
+# and a valid installed one
+_onlyPackage = ''
+if args.atom:
+    if portage.dep.isvalidatom(args.atom) and portage.dep.isspecific(args.atom):
+        _onlyPackage = portage.dep.dep_getcpv(args.atom)
+    else:
+        print('Invalid package atom provided. Use something like =category/package-1.23')
+        exit()
+
+# https://dev.gentoo.org/~zmedico/portage/doc/api/index.html
+# https://wiki.gentoo.org/wiki/Project:Portage
 class PortageMangle(object):
     _settings = None
     _vardbapi = None
@@ -57,17 +71,28 @@ class PortageMangle(object):
             raise Exception(f'Tree "{eroot}" not present.')
 
     def get_wellknown_cpvs(self, since):
-        # category, package, version of all installed packages
-        cpvs = self._vardbapi.cpv_all()
+        if _onlyPackage:
+            if self._vardbapi.cpv_exists(_onlyPackage):
+                # category, package, version of specific package
+                c, p, v, r = portage.versions.catpkgsplit(_onlyPackage)
+                cpvs = [c + '/' + p + '-' + v]
+            else:
+                print('No such atom installed.')
+                return None
+        else:
+            # category, package, version of all installed packages
+            cpvs = self._vardbapi.cpv_all()
 
         # search for pkgs from known repositories
         wellknown = {}
         wellknown_count = 0
         for cpv in cpvs:
+            # category, package, version, revision
             c, p, v, r = portage.versions.catpkgsplit(cpv)
             if r != 'r0':
                 v = '%s-%s' % (v, r)
 
+            # repository
             repo, = self._vardbapi.aux_get(cpv, ['repository'])
             if len(repo) == 0:
                 repo, = self._vardbapi.aux_get(cpv, ['REPOSITORY'])
@@ -75,6 +100,7 @@ class PortageMangle(object):
             # timestamp of merge
             mergedstamp = self._vardbapi.aux_get(cpv, ['_mtime_'])[0]
 
+            # add only if repo is gentoo. Maybe more in the future?
             if repo == 'gentoo' and mergedstamp >= since:
                 wellknown.setdefault(c, {}).setdefault(p, []).append(v)
                 wellknown_count = wellknown_count + 1
@@ -179,6 +205,7 @@ class PFL(object):
             else:
                 print('deleting xml file %s ...' % xmlfile)
                 os.unlink(xmlfile)
+                print('Done.')
 
     def _read_config(self):
         self._config = configparser.ConfigParser()
