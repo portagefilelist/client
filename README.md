@@ -22,6 +22,14 @@ There is also a [systemd timer](https://wiki.gentoo.org/wiki/Systemd#Timer_servi
 It is installed by default but inactive. The timer needs to be activated by hand: `systemctl enable pfl.timer`.
 Just make sure to use either of the crons.
 
+#### Specific package only
+If there is the need to upload only a specific package atom, provide it with the `-a|--atom` cli option.
+Only a specific package atom is currently supported. Like `=media-fonts/fira-code-6.2` and NOT `media-fonts/fira-code`
+
+#### Pretend mode, or just want to know what is uploaded?
+Use `-p|--pretend` as a cli option to gather the data and leaving the xml file behind. It prints the location to be
+viewed. This option does not set the last updated timestamp but uses it if available.
+
 ## CLI Search
 
 The package does provide a cli command `e-file` to execute a search in your terminal.
