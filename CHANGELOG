@@ -1,4 +1,4 @@
-pfl-3.3 TBD
+pfl-3.3 2023-12-18
 
 + Added pretend [-p|--pretend] option. Data will be collected to be viewed, but not uploaded. #33
 + Added the ability to provide a package atom [-a|--atom] to upload only the provided package. #13
@@ -8,6 +8,7 @@ pfl-3.3 TBD
 + Move to setuptools and PEP517 (thx to https://github.com/parona-source)
 + Use EROOT for determining root (thx to https://github.com/parona-source)
 + Use fromtimestamp instead of utcfromtimestamp (thx to https://github.com/parona-source)
++ Updated license to GPLv3
 
 
 pfl-3.2.1 2023-07-18

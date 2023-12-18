@@ -15,9 +15,9 @@ classifiers = [
     "Topic :: System :: Operating System Kernels :: Linux",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
-    "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
 ]
-license = {text = "GNU General Public License v2"}
+license = {text = "GNU General Public License v3"}
 dependencies = [
     "portage",
     "requests",
