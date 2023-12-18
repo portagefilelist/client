@@ -1,0 +1,42 @@
+pfl-3.3 2023-12-18
+
++ Added pretend [-p|--pretend] option. Data will be collected to be viewed, but not uploaded. #33
++ Added the ability to provide a package atom [-a|--atom] to upload only the provided package. #13
++ Added man file for e-file
++ Updated description texts
++ Added CHANGELOG and VERSION
++ Move to setuptools and PEP517 (thx to https://github.com/parona-source)
++ Use EROOT for determining root (thx to https://github.com/parona-source)
++ Use fromtimestamp instead of utcfromtimestamp (thx to https://github.com/parona-source)
++ Updated license to GPLv3
+
+
+pfl-3.2.1 2023-07-18
+
++ Under new management
++ Created pfl.1 by @JensKorte in #19
+* Update README.md by @JensKorte in #17
+* Update setup.py by @billie80 in #23
+* Update e-file @bananas-repos
+
+
+pfl-3.2 2021-10-06
+
++ python version of e-file (#7, #8)
+* Not using HOME (#10)
+* empty temp files not removed (#12)
+* run pfl script as user/group portage
+
+
+pfl-3.1 2020-04-12
+
++ HTTPS support (#3)
++ IPv6 support (#2)
++ Documentation (#5)
++ systemd Timer (#4)
+* wrong xml encoding in file names (#1)
+
+
+ pfl-3.0.1-r1 2020-04-08
+
++ Init version pfl-3.0.1-r1

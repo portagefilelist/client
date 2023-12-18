@@ -1,5 +1,18 @@
 #!/usr/bin/env python
 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
+
 import requests
 import argparse
 import sys
@@ -12,15 +25,18 @@ from datetime import datetime
 from termcolor import colored
 import termcolor
 
-VERSION='3.2.1'
+VERSION='3.3'
 BASEURL='https://www.portagefilelist.de/query.php?file=%s'
 
 parser = argparse.ArgumentParser(description='This script searches on \
-https://www.portagefilelist.de for the given file and displays the result \
-with further informations from local portage', prog='e-file')
+https://www.portagefilelist.de for the given filename(slice.hpp) or \
+path(/usr/include/exiv2/slice.hpp) and displays the result \
+with further information from local portage. \
+Using * as a wildcard (slice.*) (/usr/include/exiv2/*) works too.', add_help=False)
 
-parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + VERSION)
-parser.add_argument('file', help='file to search for')
+parser.add_argument('-h', '--help', action='help', help='Show this help message and exit.')
+parser.add_argument('-v', '--version', action='version', version='e-file ' + VERSION)
+parser.add_argument('file', help='Filename or path to search for.')
 args = parser.parse_args()
 
 try:
@@ -66,8 +82,9 @@ elif 'result' in resultJson:
                 cps[category][package]['versions'].append(version)
                 cps[category][package]['files'].append(filepath)
 
-        vardbapi = portage.db['/']['vartree'].dbapi
-        portdbapi = portage.db['/']['porttree'].dbapi
+        eroot = portage.settings['EROOT']
+        vardbapi = portage.db[eroot]['vartree'].dbapi
+        portdbapi = portage.db[eroot]['porttree'].dbapi
         for category, packages in cps.items():
             for package, vf in packages.items():
                 installed_cpvs = sorted(set(vardbapi.cp_list('%s/%s' % (category, package))))
@@ -110,7 +127,7 @@ elif 'result' in resultJson:
                             build_time = 0
 
                         sys.stdout.write(colored(portage.versions.cpv_getversion(installed_cpv), 'grey', 'on_blue'))
-                        sys.stdout.write(colored(datetime.utcfromtimestamp(build_time).strftime('(%c) '), 'magenta'))
+                        sys.stdout.write(colored(datetime.fromtimestamp(build_time).strftime('(%c) '), 'magenta'))
 
                     sys.stdout.write('\n')
 
@@ -133,7 +150,7 @@ elif 'result' in resultJson:
                 sys.stdout.write('\n')
 
     else:
-        print('Empty result list return. This should not happend.')
+        print('Empty result return. This should not happend.')
         sys.exit(1)
 else:
     print('Something went wrong with the request result.')

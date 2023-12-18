@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pfl"
+version = "3.3"
+authors = [
+    {name = "Banana", email = "mail@bananas-playground.net"},
+]
+description = "Searchable online file/package database for Gentoo."
+keywords = ["gentoo"]
+classifiers = [
+    "Natural Language :: English",
+    "Topic :: System :: Operating System Kernels :: Linux",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+]
+license = {text = "GNU General Public License v3"}
+dependencies = [
+    "portage",
+    "requests",
+    "termcolor",
+]
+
+[tool.setuptools]
+packages = ["pfl"]
+script-files = ["bin/e-file", "bin/pfl"]
+
+[tool.setuptools.data-files]
+"share/man/man1" = ["man/e-file.1","man/pfl.1"]
