@@ -15,7 +15,7 @@ from time import time
 import configparser
 import argparse
 
-VERSION = '3.3'
+VERSION = '3.3.1'
 HOME = os.path.expanduser("~")
 # if it is run as cron and portage use. Otherwise use current user HOME
 if pwd.getpwuid(os.getuid())[0] == 'portage':
