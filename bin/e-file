@@ -12,7 +12,7 @@ from datetime import datetime
 from termcolor import colored
 import termcolor
 
-VERSION='3.3.1'
+VERSION='3.4'
 BASEURL='https://www.portagefilelist.de/query.php?file=%s'
 
 parser = argparse.ArgumentParser(description='This script searches on \

@@ -30,6 +30,11 @@ Only the specific package atom syntax is currently supported. Like `=media-fonts
 Use `-p|--pretend` as a cli option to gather the data and leaving the xml file behind. It prints the location to be
 viewed. This option does not set the last updated timestamp but uses it if available.
 
+#### Specific repository mode
+Use `-r|--repo` as a cli option to collect the data only from given repository. Currently only `gentoo`
+([Gentoo repository](https://packages.gentoo.org/)) and `guru` ([Guru repository](https://wiki.gentoo.org/wiki/Project:GURU))
+are available.
+
 ## CLI Search
 
 The package does provide a cli command `e-file` to execute a search in your terminal.

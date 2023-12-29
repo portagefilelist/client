@@ -15,7 +15,7 @@ from time import time
 import configparser
 import argparse
 
-VERSION = '3.3.1'
+VERSION = '3.4'
 HOME = os.path.expanduser("~")
 # if it is run as cron and portage use. Otherwise use current user HOME
 if pwd.getpwuid(os.getuid())[0] == 'portage':
@@ -24,6 +24,8 @@ else:
     INFOFILE = '%s/.pfl.info' % HOME
 
 UPLOADURL='https://www.portagefilelist.de/data.php'
+
+ALLOWED_REPOS = ['gentoo', 'guru']
 
 parser = argparse.ArgumentParser(description='This is the PFL upload script. \
 The purpose of this script is to collect the file names (not the content) of \
@@ -36,6 +38,7 @@ https://www.portagefilelist.de for further information.', add_help=False)
 parser.add_argument('-p', '--pretend', action='store_true', help='Collect data only and do not upload or change \
 the last run value.')
 parser.add_argument('-a', '--atom', action='store', help='Update only for given atom.')
+parser.add_argument('-r', '--repo', action='store', help='Update only for given repository: '+'|'.join(ALLOWED_REPOS))
 parser.add_argument('-h', '--help', action='help', help='Show this help message and exit.')
 parser.add_argument('-v', '--version', action='version', version='pfl ' + VERSION, help='Show version number and exit.')
 
@@ -43,6 +46,15 @@ args = parser.parse_args()
 
 if args.pretend:
     print('Pretend mode. Data will be build and left to view. Nothing will be uploaded.')
+
+_onlyRepo = ''
+if args.repo:
+    if args.repo in ALLOWED_REPOS:
+        print('Collect data only from repository: "%s"' % args.repo)
+        _onlyRepo = args.repo
+    else:
+        print('Invalid repo given. Valid values are: '+'|'.join(ALLOWED_REPOS))
+        exit()
 
 # if only one specific package should be updated, check if the syntax is correct
 # and a valid installed one
@@ -100,9 +112,11 @@ class PortageMangle(object):
             # timestamp of merge
             mergedstamp = self._vardbapi.aux_get(cpv, ['_mtime_'])[0]
 
-            # add only if repo is gentoo. Maybe more in the future?
-            if repo == 'gentoo' and mergedstamp >= since:
-                wellknown.setdefault(c, {}).setdefault(p, []).append(v)
+            if repo in ALLOWED_REPOS and mergedstamp >= since:
+                if (_onlyRepo and repo != _onlyRepo):
+                    continue
+
+                wellknown.setdefault(repo, {}).setdefault(c, {}).setdefault(p, []).append(v)
                 wellknown_count = wellknown_count + 1
 
         return [wellknown_count, wellknown]
@@ -111,11 +125,8 @@ class PortageMangle(object):
         dbl = portage.dblink(c, '%s-%s' % (p, v), self._settings['ROOT'], self._settings)
         return dbl.getcontents()
 
-    def _write2file(self, txt, indent=None):
-        if args.pretend and indent != None:
-            os.write(self._xmlfile[0], bytes(indent, 'UTF-8'))
-
-        os.write(self._xmlfile[0], bytes(txt, 'UTF-8'))
+    def _write2file(self, txt, indent):
+        os.write(self._xmlfile[0], bytes(indent, 'UTF-8'))
 
     def collect_into_xml(self, since):
         count, cpvs = self.get_wellknown_cpvs(since)
@@ -127,53 +138,53 @@ class PortageMangle(object):
         self._xmlfile = mkstemp('.xml', 'pfl')
 
         print('writing xml file %s ...' % self._xmlfile[1])
-        self._write2file('<?xml version="1.0" encoding="UTF-8"?>')
+        self._write2file('<?xml version="1.0" encoding="UTF-8"?>', '\n')
         self._write2file('<pfl xmlns="http://www.portagefilelist.de/xsd/collect">', '\n')
 
         workingon = 0
-        for c in cpvs:
-            self._write2file('<category name="%s">' % c, '\n\t')
-            for p in cpvs[c]:
-                for v in cpvs[c][p]:
-                    workingon = workingon + 1
-                    print('working on (%d of %d) %s/%s-%s' % (workingon, count, c, p, v))
+        for r in cpvs: # repository
+            for c in cpvs[r]: # category
+                self._write2file('<category name="%s">' % c, '\n\t')
+                for p in cpvs[r][c]: # packages
+                    for v in cpvs[r][c][p]: # versions
+                        workingon = workingon + 1
+                        print('working on (%d of %d) %s/%s-%s::%s' % (workingon, count, c, p, v, r))
 
-                    contents = self.get_contents(c, p, v)
+                        contents = self.get_contents(c, p, v)
 
-                    # no files -> this package does not matter
-                    if len(contents) == 0:
-                        continue
+                        # no files -> this package does not matter
+                        if len(contents) == 0:
+                            continue
 
-                    mergedstamp = self._vardbapi.aux_get('%s/%s-%s' % (c, p, v), ['_mtime_'])[0]
+                        mergedstamp = self._vardbapi.aux_get('%s/%s-%s' % (c, p, v), ['_mtime_'])[0]
 
-                    use = self._vardbapi.aux_get('%s/%s-%s' % (c, p, v), ['USE'])[0].split()
-                    iuse = self._vardbapi.aux_get('%s/%s-%s' % (c, p, v), ['IUSE'])[0].split()
-                    keywords = self._vardbapi.aux_get('%s/%s-%s' % (c, p, v), ['KEYWORDS'])[0].split()
+                        use = self._vardbapi.aux_get('%s/%s-%s' % (c, p, v), ['USE'])[0].split()
+                        iuse = self._vardbapi.aux_get('%s/%s-%s' % (c, p, v), ['IUSE'])[0].split()
+                        keywords = self._vardbapi.aux_get('%s/%s-%s' % (c, p, v), ['KEYWORDS'])[0].split()
 
-                    us = []
-                    arch = None
+                        us = []
+                        arch = 'none'
 
-                    for u in use:
-                        if u in iuse:
-                            us.append(u)
-                        if u in keywords or '~' + u in keywords:
-                            arch = u
-                    self._write2file('<package arch="%s" name="%s" timestamp="%s" version="%s">' % (arch, p, str(mergedstamp), v), '\n\t\t')
+                        for u in use:
+                            if u in iuse:
+                                us.append(u)
+                            if u in keywords or '~' + u in keywords:
+                                arch = u
+                        self._write2file('<package arch="%s" name="%s" timestamp="%s" version="%s" repo="%s">' % (arch, p, str(mergedstamp), v, r), '\n\t\t')
 
-                    self._write2file('<files>', '\n\t\t\t')
-                    for f in contents:
-                        self._write2file('<file type="%s">%s</file>' % (contents[f][0], escape(f)), '\n\t\t\t\t')
-                    self._write2file('</files>', '\n\t\t\t')
+                        self._write2file('<files>', '\n\t\t\t')
+                        for f in contents:
+                            self._write2file('<file type="%s">%s</file>' % (contents[f][0], escape(f)), '\n\t\t\t\t')
+                        self._write2file('</files>', '\n\t\t\t')
 
-                    if len(us) > 0:
-                        self._write2file('<uses>', '\n\t\t\t')
-                        for u in us:
-                            self._write2file('<use>%s</use>' %u, '\n\t\t\t\t')
-                        self._write2file('</uses>', '\n\t\t\t')
+                        if len(us) > 0:
+                            self._write2file('<uses>', '\n\t\t\t')
+                            for u in us:
+                                self._write2file('<use>%s</use>' %u, '\n\t\t\t\t')
+                            self._write2file('</uses>', '\n\t\t\t')
 
-                    self._write2file('</package>', '\n\t\t')
-
-            self._write2file('</category>', '\n\t')
+                        self._write2file('</package>', '\n\t\t')
+                self._write2file('</category>', '\n\t')
         self._write2file('</pfl>', '\n')
 
         os.close(self._xmlfile[0])
@@ -248,3 +259,6 @@ class PFL(object):
                 return
 
         self._finish(xmlfile, True)
+
+pfl = PFL()
+pfl.run()

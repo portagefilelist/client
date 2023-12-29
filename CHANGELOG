@@ -1,11 +1,18 @@
+pfl-3.4 TBD
+
++ Fixed man file for pfl
++ Added GURU as a additional repository #41
++ Added --repo [-r|--repo] cli option to pfl to collect and update only from specified repository.
+  Only gentoo and GURU are available.
+
 pfl-3.3.1 2023-12-18
 
 + Cleared license confusion. Will be GPLv2
 
 pfl-3.3 2023-12-18
 
-+ Added pretend [-p|--pretend] option. Data will be collected to be viewed, but not uploaded. #33
-+ Added the ability to provide a package atom [-a|--atom] to upload only the provided package. #13
++ Added pretend [-p|--pretend] cli option to pfl. Data will be collected to be viewed, but not uploaded. #33
++ Added the ability to pfl to provide a package atom [-a|--atom] to upload only the provided package. #13
 + Added man file for e-file
 + Updated description texts
 + Added CHANGELOG and VERSION
