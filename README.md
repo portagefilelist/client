@@ -20,15 +20,15 @@ Or use the network-cron useflag which installs a weekly executed cronjob using a
 
 There is also a [systemd timer](https://wiki.gentoo.org/wiki/Systemd#Timer_services) available.
 It is installed by default but inactive. The timer needs to be activated by hand: `systemctl enable pfl.timer`.
-Just make sure to use either of the crons.
+Just make sure to use either of the crons and not both.
 
 #### Specific package only
 If there is the need to upload only a specific package atom, provide it with the `-a|--atom` cli option.
 Only the specific package atom syntax is currently supported. Like `=media-fonts/fira-code-6.2` and NOT `media-fonts/fira-code`
 
 #### Pretend mode, or just want to know what is uploaded?
-Use `-p|--pretend` as a cli option to gather the data and leaving the xml file behind. It prints the location to be
-viewed. This option does not set the last updated timestamp but uses it if available.
+Use `-p|--pretend` as a cli option to gather the data and leaving the xml files behind. It returns the path of the fies.
+This option does not set the last updated timestamp but uses it if its available.
 
 #### Specific repository mode
 Use `-r|--repo` as a cli option to collect the data only from given repository. Currently only `gentoo`
@@ -46,6 +46,7 @@ Example: `$ e-file brctl` results in
  *  app-shells/bash-completion
         Seen Versions:          2.11
         Portage Versions:       2.11 9999
+        Repository:             Gentoo
         Homepage:               https://github.com/scop/bash-completion
         Description:            Programmable Completion for bash
         Matched Files:          /usr/share/bash-completion/completions/brctl/brctl
@@ -53,18 +54,20 @@ Example: `$ e-file brctl` results in
  *  net-misc/bridge-utils
         Seen Versions:          1.7.1-r1
         Portage Versions:       1.7.1-r1
+        Repository:             Gentoo
         Homepage:               http://bridge.sourceforge.net/
         Description:            Tools for configuring the Linux kernel 802.1d Ethernet Bridge
         Matched Files:          /sbin/brctl/brctl
 ```
 
-It also displays any current installed packages on your system and wildcardsearch:
+It also displays any current installed packages on your system and has a wildcardsearch:
 
 ```
 $ e-file apache2ct*
 [I] www-servers/apache
         Seen Versions:          2.2.29 2.4.34-r2 2.4.39 2.4.55-r1 2.4.57 2.4.57-r1
         Portage Versions:       2.4.57 2.4.57-r1
+        Repository:             Gentoo
         Installed Versions:     2.4.57(Fri Jun 23 06:43:37 2023)
         Homepage:               https://httpd.apache.org/
         Description:            The Apache Web Server
@@ -73,13 +76,14 @@ $ e-file apache2ct*
  *  app-shells/bash-completion
         Seen Versions:          2.11
         Portage Versions:       2.11 9999
+        Repository:             Gentoo
         Homepage:               https://github.com/scop/bash-completion
         Description:            Programmable Completion for bash
         Matched Files:          /usr/share/bash-completion/completions/apache2ctl/apache2ctl
 ```
 
-The e-file does only provide searching for packages with a given filename. More options are available with the browser search.
+The e-file does only provide searching for packages with a filename. More options are available with the browser search.
 
 ## Browser Search
 
-Searching through the user provided uploads for a package, package itself and categories can be done [at the website itself](https://www.portagefilelist.de/).
+Searching through the user provided uploads for a package, package itself and categories is available at [at the website itself](https://www.portagefilelist.de/).

@@ -1,19 +1,19 @@
-# portage api
-import portage
-
-# xml
-from xml.sax.saxutils import escape
-
-# http
-import requests
-
+# standard library
 import sys
 import os
 import pwd
-from tempfile import mkstemp
+from tempfile import mkstemp, mkdtemp
 from time import time
 import configparser
 import argparse
+from xml.sax.saxutils import escape
+import tarfile
+
+# external library
+# portage api: sys-apps/portage
+import portage
+# http: dev-python/requests
+import requests
 
 VERSION = '3.4'
 HOME = os.path.expanduser("~")
@@ -24,7 +24,6 @@ else:
     INFOFILE = '%s/.pfl.info' % HOME
 
 UPLOADURL='https://www.portagefilelist.de/data.php'
-
 ALLOWED_REPOS = ['gentoo', 'guru']
 
 parser = argparse.ArgumentParser(description='This is the PFL upload script. \
@@ -41,7 +40,6 @@ parser.add_argument('-a', '--atom', action='store', help='Update only for given 
 parser.add_argument('-r', '--repo', action='store', help='Update only for given repository: '+'|'.join(ALLOWED_REPOS))
 parser.add_argument('-h', '--help', action='help', help='Show this help message and exit.')
 parser.add_argument('-v', '--version', action='version', version='pfl ' + VERSION, help='Show version number and exit.')
-
 args = parser.parse_args()
 
 if args.pretend:
@@ -71,8 +69,6 @@ if args.atom:
 class PortageMangle(object):
     _settings = None
     _vardbapi = None
-
-    _xmlfile = None
 
     def __init__(self):
         eroot = portage.settings['EROOT']
@@ -125,9 +121,10 @@ class PortageMangle(object):
         dbl = portage.dblink(c, '%s-%s' % (p, v), self._settings['ROOT'], self._settings)
         return dbl.getcontents()
 
-    def _write2file(self, txt, indent):
-        os.write(self._xmlfile[0], bytes(indent, 'UTF-8'))
+    def _write2file(self, file, txt, indent):
+        os.write(file[0], bytes(indent + txt, 'UTF-8'))
 
+    # create a xml file per category and return a list of created xml files
     def collect_into_xml(self, since):
         count, cpvs = self.get_wellknown_cpvs(since)
 
@@ -135,16 +132,20 @@ class PortageMangle(object):
         if count == 0:
             return None
 
-        self._xmlfile = mkstemp('.xml', 'pfl')
-
-        print('writing xml file %s ...' % self._xmlfile[1])
-        self._write2file('<?xml version="1.0" encoding="UTF-8"?>', '\n')
-        self._write2file('<pfl xmlns="http://www.portagefilelist.de/xsd/collect">', '\n')
+        # first is the temp dir the files are stored in
+        categoryFiles = []
+        categoryFiles.append(mkdtemp(None, 'pfl-'))
 
         workingon = 0
         for r in cpvs: # repository
             for c in cpvs[r]: # category
-                self._write2file('<category name="%s">' % c, '\n\t')
+                # https://docs.python.org/3/library/tempfile.html#tempfile.mkstemp
+                categoryFile = mkstemp('.xml', 'pfl-', categoryFiles[0])
+                self._write2file(categoryFile, '<?xml version="1.0" encoding="UTF-8"?>', '')
+                self._write2file(categoryFile, '<pfl xmlns="http://www.portagefilelist.de/xsd/collect">', '\n')
+                self._write2file(categoryFile, '<category name="%s">' % c, '\n\t')
+                categoryFiles.append(categoryFile[1])
+
                 for p in cpvs[r][c]: # packages
                     for v in cpvs[r][c][p]: # versions
                         workingon = workingon + 1
@@ -170,26 +171,25 @@ class PortageMangle(object):
                                 us.append(u)
                             if u in keywords or '~' + u in keywords:
                                 arch = u
-                        self._write2file('<package arch="%s" name="%s" timestamp="%s" version="%s" repo="%s">' % (arch, p, str(mergedstamp), v, r), '\n\t\t')
+                        self._write2file(categoryFile, '<package arch="%s" name="%s" timestamp="%s" version="%s" repo="%s">' % (arch, p, str(mergedstamp), v, r), '\n\t\t')
 
-                        self._write2file('<files>', '\n\t\t\t')
+                        self._write2file(categoryFile, '<files>', '\n\t\t\t')
                         for f in contents:
-                            self._write2file('<file type="%s">%s</file>' % (contents[f][0], escape(f)), '\n\t\t\t\t')
-                        self._write2file('</files>', '\n\t\t\t')
+                            self._write2file(categoryFile, '<file type="%s">%s</file>' % (contents[f][0], escape(f)), '\n\t\t\t\t')
+                        self._write2file(categoryFile, '</files>', '\n\t\t\t')
 
                         if len(us) > 0:
-                            self._write2file('<uses>', '\n\t\t\t')
+                            self._write2file(categoryFile, '<uses>', '\n\t\t\t')
                             for u in us:
-                                self._write2file('<use>%s</use>' %u, '\n\t\t\t\t')
-                            self._write2file('</uses>', '\n\t\t\t')
+                                self._write2file(categoryFile, '<use>%s</use>' %u, '\n\t\t\t\t')
+                            self._write2file(categoryFile, '</uses>', '\n\t\t\t')
 
-                        self._write2file('</package>', '\n\t\t')
-                self._write2file('</category>', '\n\t')
-        self._write2file('</pfl>', '\n')
+                        self._write2file(categoryFile, '</package>', '\n\t\t')
+                self._write2file(categoryFile, '</category>', '\n\t')
+                self._write2file(categoryFile, '</pfl>', '\n')
+                os.close(categoryFile[0])
 
-        os.close(self._xmlfile[0])
-
-        return self._xmlfile[1]
+        return categoryFiles
 
 class PFL(object):
     _lastrun = 0
@@ -198,7 +198,7 @@ class PFL(object):
     def __init__(self):
         self._read_config()
 
-    def _finish(self, xmlfile, success = True):
+    def _finish(self, xmlfiles, success = True):
         if success and not args.pretend:
             if not self._config.has_section('PFL'):
                 self._config.add_section('PFL')
@@ -210,12 +210,18 @@ class PFL(object):
             self._config.write(hconfig)
             hconfig.close()
 
-        if xmlfile and os.path.isfile(xmlfile):
+        if xmlfiles and os.path.isdir(xmlfiles[0]):
             if args.pretend:
-                print('Pretend mode. Keeping %s' % xmlfile)
+                print('Pretend mode. Keeping:\n'+'\n'.join(xmlfiles))
+                print('The files need to be removed manually!')
             else:
-                print('deleting xml file %s ...' % xmlfile)
-                os.unlink(xmlfile)
+                print('Cleanup ...')
+                # the folder is the first element
+                tmpDir = xmlfiles.pop(0)
+                print(tmpDir + '*')
+                for pathToBeRemoved in xmlfiles:
+                    os.unlink(pathToBeRemoved)
+                os.rmdir(tmpDir)
                 print('Done.')
 
     def _read_config(self):
@@ -236,29 +242,40 @@ class PFL(object):
     def run(self):
         pm = PortageMangle()
 
-        xmlfile = pm.collect_into_xml(self._last_run())
+        xmlfiles = pm.collect_into_xml(self._last_run())
 
-        if xmlfile == None:
-            print('nothing to collect. If this is wrong, set PFL/lastrun in %s to 0' % INFOFILE)
+        if xmlfiles == None:
+            print('Nothing to collect. If this is wrong, set PFL/lastrun in %s to 0' % INFOFILE)
+            toClean = xmlfiles
         elif args.pretend:
             print('Pretend mode. Nothing to upload.')
+            toClean = xmlfiles
         else:
-            curversion = None
-            try:
-                os.system('bzip2 %s' % xmlfile)
-                xmlfile = xmlfile + '.bz2'
-                print('uploading xml file %s to %s ...' % (xmlfile, UPLOADURL))
-                files = {'foo': open(xmlfile, 'rb')}
-                r = requests.post(UPLOADURL, files=files)
+            toClean = []
+            tmpDir = xmlfiles.pop(0)
+            toClean.append(tmpDir)
 
+            print('Creating file to upload ...')
+            fileToUpload = tmpDir + '.tar'
+            tarFile = tarfile.open(fileToUpload, 'w')
+            for toBeCompressed in xmlfiles:
+                os.system('bzip2 %s' % toBeCompressed)
+                fPath = toBeCompressed + '.bz2'
+                tarFile.add(fPath, arcname=os.path.basename(fPath))
+                toClean.append(fPath)
+            tarFile.close()
+            print('Done: %s' % fileToUpload)
+            toClean.append(fileToUpload)
+
+            try:
+                print('uploading file %s to %s ...' % (fileToUpload, UPLOADURL))
+                files = {'foo': open(fileToUpload, 'rb')}
+                r = requests.post(UPLOADURL, files=files)
                 print('HTTP Response Code: %d' % r.status_code)
                 print('HTTP Response Body: %s' % r.text)
             except Exception as e:
                 sys.stderr.write("%s\n" % e)
-                self._finish(xmlfile, False)
+                self._finish(toClean, False)
                 return
 
-        self._finish(xmlfile, True)
-
-pfl = PFL()
-pfl.run()
+        self._finish(toClean, True)
