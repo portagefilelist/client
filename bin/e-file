@@ -1,18 +1,20 @@
 #!/usr/bin/env python
 
-import requests
-import argparse
 import sys
 import json
 import portage
-
+import argparse
 from datetime import datetime
 
+# external library
+# portage api: sys-apps/portage
+import portage
 # dev-python/termcolor
 from termcolor import colored
-import termcolor
+# http: dev-python/requests
+import requests
 
-VERSION='3.3.1'
+VERSION='3.4'
 BASEURL='https://www.portagefilelist.de/query.php?file=%s'
 
 parser = argparse.ArgumentParser(description='This script searches on \
@@ -56,6 +58,7 @@ elif 'result' in resultJson:
             package = file['package']
             version = file['version']
             filepath = file['path']
+            repo = file['repository']
 
             if not category in cps:
                 cps[category] = {}
@@ -94,11 +97,13 @@ elif 'result' in resultJson:
                 sys.stdout.write(colored('        Seen Versions:          %s\n' % ' '.join(versions), 'green'))
 
                 #        Portage Versions:       X.Y A.B
-                #versions = sorted(set(vf['versions']))
                 sys.stdout.write(colored('        Portage Versions:       ', 'green'))
                 for available_cpv in available_cpvs:
                     sys.stdout.write(colored('%s ' % portage.versions.cpv_getversion(available_cpv), 'green'))
                 sys.stdout.write('\n')
+
+                #        Repository:             Name
+                sys.stdout.write(colored('        Repository:             %s\n' % repo, 'green'))
 
                 # old:
                 #        Last Installed Ver:     X.Y(Thu Apr 2 01:01:19 2020)
@@ -107,13 +112,13 @@ elif 'result' in resultJson:
                 if installed:
                     sys.stdout.write(colored('        Installed Versions:     ', 'green'))
                     for installed_cpv in installed_cpvs:
-                        build_time, homepage = vardbapi.aux_get(installed_cpv, ['BUILD_TIME', 'HOMEPAGE'])
+                        build_time, = vardbapi.aux_get(installed_cpv, ['BUILD_TIME'])
                         try:
                             build_time = build_time = int(build_time.strip())
                         except ValueError:
                             build_time = 0
 
-                        sys.stdout.write(colored(portage.versions.cpv_getversion(installed_cpv), 'grey', 'on_blue'))
+                        sys.stdout.write(colored(portage.versions.cpv_getversion(installed_cpv), 'white', 'on_blue'))
                         sys.stdout.write(colored(datetime.fromtimestamp(build_time).strftime('(%c) '), 'magenta'))
 
                     sys.stdout.write('\n')
