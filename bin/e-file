@@ -14,7 +14,7 @@ from termcolor import colored
 # http: dev-python/requests
 import requests
 
-VERSION='3.4'
+VERSION='3.x'
 BASEURL='https://www.portagefilelist.de/query.php?file=%s'
 
 parser = argparse.ArgumentParser(description='This script searches on \

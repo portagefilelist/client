@@ -1,4 +1,4 @@
-% E-FILE(1) e-file user manual | Version 3.4
+% E-FILE(1) e-file user manual | Version 3.x
 
 # NAME
 
@@ -99,4 +99,4 @@ pfl\(1\)
 
 # VERSION
 
-3.4
+3.x

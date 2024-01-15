@@ -15,7 +15,7 @@ import portage
 # http: dev-python/requests
 import requests
 
-VERSION = '3.4'
+VERSION = '3.x'
 HOME = os.path.expanduser("~")
 # if it is run as cron and portage use. Otherwise use current user HOME
 if pwd.getpwuid(os.getuid())[0] == 'portage':
