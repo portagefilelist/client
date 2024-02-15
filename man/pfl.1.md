@@ -42,7 +42,7 @@ Please visit https://www.portagefilelist.de for further information.
 
 # EXIT STATUS
 
-Nothin special yet.
+Nothing special yet.
 A non-zero exit code is treated as an abnormal exit, and at times, 
 the error code indicates what the problem was. 
 A zero error code means a successful exit.
