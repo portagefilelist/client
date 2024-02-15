@@ -1,4 +1,5 @@
 pfl-3.x -
+* Fixed #47: Do not process everything after a version change
 
 
 pfl-3.4 2024-01-06
