@@ -233,11 +233,7 @@ class PFL(object):
         if self._config.get('PFL', 'version', fallback='noversion') == 'noversion':
             return 0
         else:
-            if self._config.get('PFL', 'version') != VERSION:
-                print('new PFL version - I will collect all packages')
-                return 0
-            else:
-                return int(self._config.get('PFL', 'lastrun', fallback=0))
+            return int(self._config.get('PFL', 'lastrun', fallback=0))
 
     def run(self):
         pm = PortageMangle()
