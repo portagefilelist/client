@@ -87,3 +87,7 @@ The e-file does only provide searching for packages with a filename. More option
 ## Browser Search
 
 Searching through the user provided uploads for a package, package itself and categories is available at [at the website itself](https://www.portagefilelist.de/).
+
+## Useful Portage tools
+
+The Gentoo wiki does provide a good list of [further tools about portage.](https://wiki.gentoo.org/wiki/Useful_Portage_tools)
