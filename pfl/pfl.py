@@ -16,15 +16,14 @@ import portage
 import requests
 
 VERSION = '3.x'
+UPLOADURL='https://www.portagefilelist.de/data.php'
+ALLOWED_REPOS = ['gentoo', 'guru']
 HOME = os.path.expanduser("~")
 # if it is run as cron and portage use. Otherwise use current user HOME
 if pwd.getpwuid(os.getuid())[0] == 'portage':
     INFOFILE = '/var/lib/pfl/pfl.info'
 else:
     INFOFILE = '%s/.pfl.info' % HOME
-
-UPLOADURL='https://www.portagefilelist.de/data.php'
-ALLOWED_REPOS = ['gentoo', 'guru']
 
 parser = argparse.ArgumentParser(description='This is the PFL upload script. \
 The purpose of this script is to collect the file names (not the content) of \

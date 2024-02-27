@@ -13,13 +13,12 @@ import requests
 VERSION = '3.x'
 BASEURL = 'https://www.portagefilelist.de/query.php?file=%s'
 
-
 def run(raw_args=None):
     parser = argparse.ArgumentParser(description='This script searches on \
-    https://www.portagefilelist.de for the given filename(slice.hpp) or \
-    path(/usr/include/exiv2/slice.hpp) and displays the result \
-    with further information from local portage. \
-    Using * as a wildcard (slice.*) (/usr/include/exiv2/*) works too.', add_help=False)
+https://www.portagefilelist.de for the given filename(slice.hpp) or \
+path(/usr/include/exiv2/slice.hpp) and displays the result \
+with further information from local portage. \
+Using * as a wildcard (slice.*) (/usr/include/exiv2/*) works too.', add_help=False)
 
     parser.add_argument('-h', '--help', action='help', help='Show this help message and exit.')
     parser.add_argument('-v', '--version', action='version', version='e-file ' + VERSION)
