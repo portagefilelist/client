@@ -90,4 +90,10 @@ Searching through the user provided uploads for a package, package itself and ca
 
 ## Useful Portage tools
 
-The Gentoo wiki does provide a good list of [further tools about portage.](https://wiki.gentoo.org/wiki/Useful_Portage_tools)
+The Gentoo wiki does provide a good list of [further tools about portage](https://wiki.gentoo.org/wiki/Useful_Portage_tools).
+
+## Used by
+
+[Command-not-found handler for Gentoo systems](https://github.com/AndrewAmmerlaan/command-not-found-gentoo) uses pfl e-file search 
+to suggest packages, if it is installed.
+
