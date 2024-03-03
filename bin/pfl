@@ -1,10 +1,70 @@
 #!/usr/bin/env python
 
+# standard library
 import sys
+import os
+import argparse
+
+# external library
+# portage api: sys-apps/portage
+import portage
+
+# pfl module
 import pfl.pfl
 
-def main():
-    pfl.pfl.PFL().run()
+VERSION = '3.x'
+ALLOWED_REPOS = ['gentoo', 'guru']
 
+parser = argparse.ArgumentParser(description='This is the PFL upload script. \
+The purpose of this script is to collect the file names (not the content) of \
+all installed packages from the Gentoo repo and upload them to \
+portagefilelist.de. After some time your uploaded data will be imported into a \
+searchable database. Thus you will provide a way for other people to find a \
+package which contains a specific file/binary. Please visit \
+https://www.portagefilelist.de for further information.', add_help=False)
+
+parser.add_argument('-p', '--pretend', action='store_true', help='Collect data only and do not upload or change \
+the last run value.')
+parser.add_argument('-a', '--atom', action='store', help='Update only for given atom.')
+parser.add_argument('-r', '--repo', action='store', help='Update only for given repository: '+'|'.join(ALLOWED_REPOS))
+parser.add_argument('-h', '--help', action='help', help='Show this help message and exit.')
+parser.add_argument('-v', '--version', action='version', version='pfl ' + VERSION, help='Show version number and exit.')
+args = parser.parse_args()
+
+if args.pretend:
+    print('Pretend mode. Data will be build and left to view. Nothing will be uploaded.')
+
+# options needed to run()
+options = {
+    'onlyRepo': '',
+    'onlyPackage': '',
+    'pretend': args.pretend
+}
+
+if args.repo:
+    if args.repo in ALLOWED_REPOS:
+        print('Collect data only from repository: "%s"' % args.repo)
+        options['onlyRepo'] = args.repo
+    else:
+        print('Invalid repo given. Valid values are: '+'|'.join(ALLOWED_REPOS))
+        exit()
+
+# if only one specific package should be updated, check if the syntax is correct
+# and a valid installed one
+_onlyPackage = ''
+if args.atom:
+    if portage.dep.isvalidatom(args.atom) and portage.dep.isspecific(args.atom):
+        options['onlyPackage'] = portage.dep.dep_getcpv(args.atom)
+    else:
+        print('Invalid package atom provided. Use something like =category/package-1.23')
+        exit()
+
+def main():
+    options['stdout'] = True
+    ret, out = pfl.pfl.run(options)
+    sys.stdout.write(out)
+    return ret
+
+# run if not imported
 if __name__ == '__main__':
     sys.exit(main())

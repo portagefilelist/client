@@ -5,7 +5,6 @@ import pwd
 from tempfile import mkstemp, mkdtemp
 from time import time
 import configparser
-import argparse
 from xml.sax.saxutils import escape
 import tarfile
 
@@ -18,58 +17,38 @@ import requests
 VERSION = '3.x'
 UPLOADURL='https://www.portagefilelist.de/data.php'
 ALLOWED_REPOS = ['gentoo', 'guru']
-HOME = os.path.expanduser("~")
+
 # if it is run as cron and portage use. Otherwise use current user HOME
 if pwd.getpwuid(os.getuid())[0] == 'portage':
     INFOFILE = '/var/lib/pfl/pfl.info'
 else:
+    HOME = os.path.expanduser("~")
     INFOFILE = '%s/.pfl.info' % HOME
 
-parser = argparse.ArgumentParser(description='This is the PFL upload script. \
-The purpose of this script is to collect the file names (not the content) of \
-all installed packages from the Gentoo repo and upload them to \
-portagefilelist.de. After some time your uploaded data will be imported into a \
-searchable database. Thus you will provide a way for other people to find a \
-package which contains a specific file/binary. Please visit \
-https://www.portagefilelist.de for further information.', add_help=False)
-
-parser.add_argument('-p', '--pretend', action='store_true', help='Collect data only and do not upload or change \
-the last run value.')
-parser.add_argument('-a', '--atom', action='store', help='Update only for given atom.')
-parser.add_argument('-r', '--repo', action='store', help='Update only for given repository: '+'|'.join(ALLOWED_REPOS))
-parser.add_argument('-h', '--help', action='help', help='Show this help message and exit.')
-parser.add_argument('-v', '--version', action='version', version='pfl ' + VERSION, help='Show version number and exit.')
-args = parser.parse_args()
-
-if args.pretend:
-    print('Pretend mode. Data will be build and left to view. Nothing will be uploaded.')
-
-_onlyRepo = ''
-if args.repo:
-    if args.repo in ALLOWED_REPOS:
-        print('Collect data only from repository: "%s"' % args.repo)
-        _onlyRepo = args.repo
-    else:
-        print('Invalid repo given. Valid values are: '+'|'.join(ALLOWED_REPOS))
-        exit()
-
-# if only one specific package should be updated, check if the syntax is correct
-# and a valid installed one
-_onlyPackage = ''
-if args.atom:
-    if portage.dep.isvalidatom(args.atom) and portage.dep.isspecific(args.atom):
-        _onlyPackage = portage.dep.dep_getcpv(args.atom)
-    else:
-        print('Invalid package atom provided. Use something like =category/package-1.23')
-        exit()
+# the main method to run this.
+# options are
+# options = {
+#      'onlyRepo': '',
+#      'onlyPackage': '',
+#      'pretend': args.pretend,
+#      'stdout': False
+#  }
+# Use options['stdout'] = True if you wan to run this as a script which prints the output as it happens.
+# With False the output is collected and returned, so no immediate display what is going on.
+def run(options):
+    start = PFL(options)
+    return start.run()
 
 # https://dev.gentoo.org/~zmedico/portage/doc/api/index.html
 # https://wiki.gentoo.org/wiki/Project:Portage
 class PortageMangle(object):
     _settings = None
     _vardbapi = None
+    _options = None
+    _out = ''
 
-    def __init__(self):
+    def __init__(self, options):
+        self._options = options
         eroot = portage.settings['EROOT']
         if eroot in portage.db:
             self._settings = portage.db[eroot]['vartree'].settings
@@ -77,14 +56,20 @@ class PortageMangle(object):
         else:
             raise Exception(f'Tree "{eroot}" not present.')
 
+    def log(self, output):
+        if(self._options['stdout']):
+            print(output)
+        else:
+            self._out += output + '\n'
+
     def get_wellknown_cpvs(self, since):
-        if _onlyPackage:
-            if self._vardbapi.cpv_exists(_onlyPackage):
+        if self._options['onlyPackage']:
+            if self._vardbapi.cpv_exists(self._options['onlyPackage']):
                 # category, package, version of specific package
-                c, p, v, r = portage.versions.catpkgsplit(_onlyPackage)
+                c, p, v, r = portage.versions.catpkgsplit(self._options['onlyPackage'])
                 cpvs = [c + '/' + p + '-' + v]
             else:
-                print('No such atom installed.')
+                self.log('No such atom installed.')
                 return None
         else:
             # category, package, version of all installed packages
@@ -108,7 +93,7 @@ class PortageMangle(object):
             mergedstamp = self._vardbapi.aux_get(cpv, ['_mtime_'])[0]
 
             if repo in ALLOWED_REPOS and mergedstamp >= since:
-                if (_onlyRepo and repo != _onlyRepo):
+                if (self._options['onlyRepo'] and repo != self._options['onlyRepo']):
                     continue
 
                 wellknown.setdefault(repo, {}).setdefault(c, {}).setdefault(p, []).append(v)
@@ -129,7 +114,7 @@ class PortageMangle(object):
 
         # nothing to do
         if count == 0:
-            return None
+            return None, self._out
 
         # first is the temp dir the files are stored in
         categoryFiles = []
@@ -148,7 +133,7 @@ class PortageMangle(object):
                 for p in cpvs[r][c]: # packages
                     for v in cpvs[r][c][p]: # versions
                         workingon = workingon + 1
-                        print('working on (%d of %d) %s/%s-%s::%s' % (workingon, count, c, p, v, r))
+                        self.log('working on (%d of %d) %s/%s-%s::%s' % (workingon, count, c, p, v, r))
 
                         contents = self.get_contents(c, p, v)
 
@@ -188,17 +173,21 @@ class PortageMangle(object):
                 self._write2file(categoryFile, '</pfl>', '\n')
                 os.close(categoryFile[0])
 
-        return categoryFiles
+        return categoryFiles, self._out
+
 
 class PFL(object):
     _lastrun = 0
     _config = None
+    _options = None
+    _out = ''
 
-    def __init__(self):
+    def __init__(self, options):
+        self._options = options
         self._read_config()
 
     def _finish(self, xmlfiles, success = True):
-        if success and not args.pretend:
+        if success and not self._options['pretend']:
             if not self._config.has_section('PFL'):
                 self._config.add_section('PFL')
 
@@ -210,18 +199,18 @@ class PFL(object):
             hconfig.close()
 
         if xmlfiles and os.path.isdir(xmlfiles[0]):
-            if args.pretend:
-                print('Pretend mode. Keeping:\n'+'\n'.join(xmlfiles))
-                print('The files need to be removed manually!')
+            if self._options['pretend']:
+                self.log('Pretend mode. Keeping:\n'+'\n'.join(xmlfiles))
+                self.log('The files need to be removed manually!')
             else:
-                print('Cleanup ...')
+                self.log('Cleanup ...')
                 # the folder is the first element
                 tmpDir = xmlfiles.pop(0)
-                print(tmpDir + '*')
+                self.log(tmpDir + '*')
                 for pathToBeRemoved in xmlfiles:
                     os.unlink(pathToBeRemoved)
                 os.rmdir(tmpDir)
-                print('Done.')
+                self.log('Done.')
 
     def _read_config(self):
         self._config = configparser.ConfigParser()
@@ -234,23 +223,30 @@ class PFL(object):
         else:
             return int(self._config.get('PFL', 'lastrun', fallback=0))
 
-    def run(self):
-        pm = PortageMangle()
+    def log(self, output):
+        if(self._options['stdout']):
+            print(output)
+        else:
+            self._out += output + '\n'
 
-        xmlfiles = pm.collect_into_xml(self._last_run())
+    def run(self):
+        pm = PortageMangle(self._options)
+
+        xmlfiles, msg = pm.collect_into_xml(self._last_run())
+        self.log(msg)
 
         if xmlfiles == None:
-            print('Nothing to collect. If this is wrong, set PFL/lastrun in %s to 0' % INFOFILE)
+            self.log('Nothing to collect. If this is wrong, set PFL/lastrun in {} to 0'.format(INFOFILE))
             toClean = xmlfiles
-        elif args.pretend:
-            print('Pretend mode. Nothing to upload.')
+        elif self._options['pretend']:
+            self.log('Pretend mode. Nothing to upload.')
             toClean = xmlfiles
         else:
             toClean = []
             tmpDir = xmlfiles.pop(0)
             toClean.append(tmpDir)
 
-            print('Creating file to upload ...')
+            self.log('Creating file to upload ...')
             fileToUpload = tmpDir + '.tar'
             tarFile = tarfile.open(fileToUpload, 'w')
             for toBeCompressed in xmlfiles:
@@ -259,18 +255,19 @@ class PFL(object):
                 tarFile.add(fPath, arcname=os.path.basename(fPath))
                 toClean.append(fPath)
             tarFile.close()
-            print('Done: %s' % fileToUpload)
+            self.log('Done: {}'.format(fileToUpload))
             toClean.append(fileToUpload)
 
             try:
-                print('uploading file %s to %s ...' % (fileToUpload, UPLOADURL))
+                self.log('uploading file {} to {} ...'.format(fileToUpload, UPLOADURL))
                 files = {'foo': open(fileToUpload, 'rb')}
                 r = requests.post(UPLOADURL, files=files)
-                print('HTTP Response Code: %d' % r.status_code)
-                print('HTTP Response Body: %s' % r.text)
+                self.log('HTTP Response Code: {}'.format(r.status_code))
+                self.log('HTTP Response Body: {}'.format(r.text))
             except Exception as e:
                 sys.stderr.write("%s\n" % e)
                 self._finish(toClean, False)
-                return
+                return 1, self._out
 
         self._finish(toClean, True)
+        return 0, self._out

@@ -3,6 +3,7 @@ pfl-3.x -
 + Fixed #47: Do not process everything after a version change
 + Fixed https://github.com/portagefilelist/client/issues/42 with https://github.com/portagefilelist/client/pull/49
   from https://github.com/AndrewAmmerlaan
++ Change: Better modules. It is one package (pfl) and two modules (e_file, pfl) with a run() method now.
 
 pfl-3.4 2024-01-06
 

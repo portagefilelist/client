@@ -1,14 +1,36 @@
 #!/usr/bin/env python
 
+# standard library
 import sys
-import e_file.e_file
+import argparse
 
+# pfl module
+import pfl.e_file
+
+VERSION='3.4'
+
+parser = argparse.ArgumentParser(description='This script searches on \
+https://www.portagefilelist.de for the given filename(slice.hpp) or \
+path(/usr/include/exiv2/slice.hpp) and displays the result \
+with further information from local portage. \
+Using * as a wildcard (slice.*) (/usr/include/exiv2/*) works too.', add_help=False)
+
+parser.add_argument('-h', '--help', action='help', help='Show this help message and exit.')
+parser.add_argument('-v', '--version', action='version', version='e-file ' + VERSION)
+parser.add_argument('file', help='Filename or path to search for.')
+args = parser.parse_args()
+
+# options needed to run()
+options = {
+    'file': args.file
+}
 
 def main():
-    ret, out = e_file.e_file.run()
+    options['stdout'] = True
+    ret, out = pfl.e_file.run(options)
     sys.stdout.write(out)
     return ret
 
-
+# run if not imported
 if __name__ == '__main__':
     sys.exit(main())

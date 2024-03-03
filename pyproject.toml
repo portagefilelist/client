@@ -25,7 +25,7 @@ dependencies = [
 ]
 
 [tool.setuptools]
-packages = ["e_file", "pfl"]
+packages = ["pfl"]
 script-files = ["bin/e-file", "bin/pfl"]
 
 [tool.setuptools.data-files]
