@@ -1,7 +1,6 @@
 # standard library
 import sys
 import json
-import portage
 from datetime import datetime
 
 # external library
@@ -12,7 +11,7 @@ from termcolor import colored
 # http: dev-python/requests
 import requests
 
-VERSION='3.4'
+VERSION='3.5'
 BASEURL='https://www.portagefilelist.de/query.php?file=%s'
 
 # the main method to run this.
