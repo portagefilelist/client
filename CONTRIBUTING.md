@@ -6,13 +6,13 @@ The [develop branch][developbranch] is the main branch for improvements and work
 Always write a clear log message for your commits. One-line messages are fine for small changes, but bigger changes should look like this:
 
     $ git commit -m "A brief summary of the commit
-    >
-    > A paragraph describing what changed and its impact."
+    A paragraph describing what changed and its impact."
 
 ## Did you find a bug?
 
 * Use the [master branch][masterbranch] as a base for your pull request.
 * **Ensure the bug was not already reported** by searching on GitHub under [Issues](https://github.com/portagefilelist/client/issues).
+* You can use the [develop branch][developbranch] to make sure if the bug is not already fixed in an upcomming version.
 * If you're unable to find an open issue addressing the problem, [open a new one](https://github.com/portagefilelist/client/issues/new). Be sure to include a **title and clear description**, as much relevant information as possible, and a **code sample** or an **executable test case** demonstrating the expected behavior that is not occurring.
 
 ## Did you write a patch that fixes a bug?
