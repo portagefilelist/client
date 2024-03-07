@@ -1,4 +1,4 @@
-pfl-3.5 -
+pfl-3.5 - 2024-03-07
 
 + Fixed #47: Do not process everything after a version change
 + Fixed https://github.com/portagefilelist/client/issues/42 with https://github.com/portagefilelist/client/pull/49
