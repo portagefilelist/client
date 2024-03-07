@@ -1,8 +1,8 @@
-% PFL(1) pfl user manual | Version 3.5
+% PFL(1) pfl user manual | Version 3.x
 
 # NAME
 
-pfl - Upload installed packages info since last run to PFL to make it searchable. 
+pfl - Upload installed packages info since last run to PFL to make it searchable.
 
 # SYNOPSIS
 
@@ -16,7 +16,7 @@ This is the PFL upload command. The purpose of this command is to collect the
 file names (not the content) of all installed packages from the Gentoo and GURU repo
 and upload them to portagefilelist.de. After some time your uploaded data will
 be imported into a searchable database. Thus you will provide a way for other
-people to find a package which contains a specific file/binary/command. 
+people to find a package which contains a specific file/binary/command.
 Please visit https://www.portagefilelist.de for further information.
 
 # USAGE
@@ -43,8 +43,8 @@ Please visit https://www.portagefilelist.de for further information.
 # EXIT STATUS
 
 Nothing special yet.
-A non-zero exit code is treated as an abnormal exit, and at times, 
-the error code indicates what the problem was. 
+A non-zero exit code is treated as an abnormal exit, and at times,
+the error code indicates what the problem was.
 A zero error code means a successful exit.
 
 # EXAMPLES
@@ -55,7 +55,7 @@ Do not upload but create the upload files to be viewed: `pfl -p`
 
 Update only for given repository. Values are gentoo or guru: `pfl -r guru`
 
-Update only for a given package atom: `pfl -atom =media-fonts/fira-code-6.2`. 
+Update only for a given package atom: `pfl -atom =media-fonts/fira-code-6.2`.
 Only the specific package atom syntax is currently supported. Like =media-fonts/fira-code-6.2 and NOT media-fonts/fira-code
 
 # FILES
@@ -90,4 +90,4 @@ e-file\(1\)
 
 # VERSION
 
-3.5
+3.x

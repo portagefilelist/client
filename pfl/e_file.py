@@ -22,7 +22,7 @@ from termcolor import colored
 # http: dev-python/requests
 import requests
 
-VERSION='3.5'
+VERSION='3.x'
 BASEURL='https://www.portagefilelist.de/query.php?file=%s'
 
 # the main method to run this.
