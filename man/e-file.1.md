@@ -1,8 +1,8 @@
-% E-FILE(1) e-file user manual | Version 3.5
+% E-FILE(1) e-file user manual | Version 3.5.1
 
 # NAME
 
-e-file - Search which package does provide a file or command. 
+e-file - Search which package does provide a file or command.
 
 # SYNOPSIS
 
@@ -34,8 +34,8 @@ The data is provided by the `pfl` command.
 # EXIT STATUS
 
 Nothing special yet.
-A non-zero exit code is treated as an abnormal exit, and at times, 
-the error code indicates what the problem was. 
+A non-zero exit code is treated as an abnormal exit, and at times,
+the error code indicates what the problem was.
 A zero error code means a successful exit.
 
 # EXAMPLES
@@ -99,4 +99,4 @@ pfl\(1\)
 
 # VERSION
 
-3.5
+3.5.1
