@@ -103,10 +103,7 @@ class Efile(object):
                     self.log(colored('\tSeen Versions:'.ljust(22), 'green') + '%s' % ' '.join(versions))
 
                     #        Portage Versions:       X.Y A.B
-                    _toPrint = colored('\tPortage Versions:'.ljust(22), 'green')
-                    for available_cpv in available_cpvs:
-                        _toPrint += portage.versions.cpv_getversion(available_cpv)
-                    self.log(_toPrint)
+                    self.log(colored('\tPortage Versions:'.ljust(22), 'green') + '%s' % ' '.join(portage.versions.cpv_getversion(available_cpv)))
 
                     #        Repository:             Name
                     self.log(colored('\tRepository:'.ljust(22), 'green') + repo)
