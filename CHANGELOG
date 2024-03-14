@@ -1,5 +1,6 @@
 pfl-3.x.x
 
++ PR #53: This fixes the lack of whitespace with listed versions. Thx to https://github.com/parona-source
 
 pfl-3.5.1 - 2024-03-09
 
