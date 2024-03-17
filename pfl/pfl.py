@@ -48,7 +48,7 @@ else:
 #      'pretend': args.pretend,
 #      'stdout': False
 #  }
-# Use options['stdout'] = True if you wan to run this as a script which prints the output as it happens.
+# Use options['stdout'] = True if you want to run this as a script which prints the output as it happens.
 # With False the output is collected and returned, so no immediate display what is going on.
 def run(options):
     start = PFL(options)
