@@ -97,11 +97,7 @@ class Efile(object):
                         installed = True
 
                     # category/package
-                    if installed:
-                        _toPrint = colored('i', 'green')
-                    else:
-                        _toPrint = colored('*', 'green')
-                    self.log('%s %s/%s' % (_toPrint, category, package))
+                    self.log('%s/%s' % (category, package))
 
                     # Seen Versions: X.Y A.B
                     versions = sorted(set(vf['versions']))
@@ -117,8 +113,8 @@ class Efile(object):
                     self.log(colored('\tRepository:'.ljust(22), 'green') + repo)
 
                     # Installed Versions: X.Y(Thu Apr 2 01:01:19 2020)
+                    _toPrint = colored('\tInstalled Versions:'.ljust(22), 'green')
                     if installed:
-                        _toPrint = colored('\tInstalled Versions:'.ljust(22), 'green')
                         for installed_cpv in installed_cpvs:
                             build_time, = vardbapi.aux_get(installed_cpv, ['BUILD_TIME'])
                             try:
@@ -127,7 +123,9 @@ class Efile(object):
                                 build_time = 0
                             _toPrint += colored(portage.versions.cpv_getversion(installed_cpv), 'white', 'on_blue')
                             _toPrint += colored(datetime.fromtimestamp(build_time).strftime('(%c) '), 'magenta')
-                        self.log(_toPrint)
+                    else:
+                        _toPrint += "-"
+                    self.log(_toPrint)
 
                     if len(available_cpvs) > 0:
                         description, homepage = portdbapi.aux_get(available_cpvs[-1], ['DESCRIPTION', 'HOMEPAGE'])
