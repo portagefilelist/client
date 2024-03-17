@@ -17,6 +17,7 @@
 import sys
 import json
 from datetime import datetime
+import re
 
 # external library
 # portage api: sys-apps/portage
@@ -34,6 +35,8 @@ BASEURL='https://www.portagefilelist.de/query.php?file=%s'
 # options = {
 #      'file': '',
 #      'stdout': False
+#      'outputPlain': False
+#      'outputJson': False
 #  }
 # Use options['stdout'] = True if you want to run this as a script which prints the output as it happens.
 # With False the output is collected and returned, so no immediate display what is going on.
@@ -49,14 +52,19 @@ class Efile(object):
         self._options = options
 
     def log(self, output=''):
-        if 'stdout' in self._options and self._options['stdout'] :
+        if self._options['outputPlain']:
+            output = re.sub(r'\x1b\[[0-9;]*m','',output)
+            output = re.sub(r'\t','',output)
+            output = re.sub(r' +',' ',output)
+
+        if 'stdout' in self._options and self._options['stdout']:
             print(output)
         else:
             self._out += output + '\n'
 
     def run(self):
         ret, jsonData = self.doRequest()
-        if(jsonData):
+        if jsonData:
             cps = {}
             for file in jsonData:
                 category = file['category']
@@ -91,11 +99,10 @@ class Efile(object):
 
                     # *  category/package
                     #[I] category/package
-                    _toPrint = ''
                     if installed:
-                        _toPrint = colored('[I] ', 'green')
+                        _toPrint = colored('i', 'green')
                     else:
-                        _toPrint = colored(' * ', 'green')
+                        _toPrint = colored('*', 'green')
                     self.log('%s %s/%s' % (_toPrint, category, package))
 
                     #        Seen Versions:          X.Y A.B
@@ -103,7 +110,10 @@ class Efile(object):
                     self.log(colored('\tSeen Versions:'.ljust(22), 'green') + '%s' % ' '.join(versions))
 
                     #        Portage Versions:       X.Y A.B
-                    self.log(colored('\tPortage Versions:'.ljust(22), 'green') + '%s' % ' '.join(portage.versions.cpv_getversion(available_cpv)))
+                    _toPrint = colored('\tPortage Versions:'.ljust(22), 'green')
+                    for available_cpv in available_cpvs:
+                        _toPrint += portage.versions.cpv_getversion(available_cpv) + ' '
+                    self.log(_toPrint.rstrip())
 
                     #        Repository:             Name
                     self.log(colored('\tRepository:'.ljust(22), 'green') + repo)
@@ -135,7 +145,7 @@ class Efile(object):
 
                     #        Matched Files:          /the/found/file; /another/found/file;
                     files = sorted(set(vf['files']))
-                    self.log(colored('\tMatched Files:'.ljust(22), 'green') + '%s' % '; '.join(files))
+                    self.log(colored('\tMatched Files:'.ljust(22), 'green') + '%s' % ' '.join(files))
                     self.log('')
 
             return 0, self._out

@@ -36,7 +36,7 @@ all installed packages from the Gentoo repo and upload them to \
 portagefilelist.de. After some time your uploaded data will be imported into a \
 searchable database. Thus you will provide a way for other people to find a \
 package which contains a specific file/binary. Please visit \
-https://www.portagefilelist.de for further information.', add_help=False)
+https://www.portagefilelist.de for further information.', add_help=False, allow_abbrev=False)
 
 parser.add_argument('-p', '--pretend', action='store_true', help='Collect data only and do not upload or change \
 the last run value.')

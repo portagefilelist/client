@@ -72,7 +72,7 @@ class PortageMangle(object):
             raise Exception(f'Tree "{eroot}" not present.')
 
     def log(self, output):
-        if(self._options['stdout']):
+        if self._options['stdout']:
             print(output)
         else:
             self._out += output + '\n'
@@ -108,7 +108,7 @@ class PortageMangle(object):
             mergedstamp = self._vardbapi.aux_get(cpv, ['_mtime_'])[0]
 
             if repo in ALLOWED_REPOS and mergedstamp >= since:
-                if (self._options['onlyRepo'] and repo != self._options['onlyRepo']):
+                if self._options['onlyRepo'] and repo != self._options['onlyRepo']:
                     continue
 
                 wellknown.setdefault(repo, {}).setdefault(c, {}).setdefault(p, []).append(v)
@@ -239,7 +239,7 @@ class PFL(object):
             return int(self._config.get('PFL', 'lastrun', fallback=0))
 
     def log(self, output):
-        if(self._options['stdout']):
+        if self._options['stdout']:
             print(output)
         else:
             self._out += output + '\n'
