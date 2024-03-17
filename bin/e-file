@@ -33,15 +33,13 @@ Using * as a wildcard (slice.*) (/usr/include/exiv2/*) works too.', add_help=Fal
 parser.add_argument('-h', '--help', action='help', help='Show this help message and exit.')
 parser.add_argument('-v', '--version', action='version', version='e-file ' + VERSION)
 parser.add_argument('--plain', action='store_true', default=False, help='Output in plain text.')
-parser.add_argument('--json', action='store_true', default=False, help='Output formatted as JSON.')
 parser.add_argument('file', help='Filename or path to search for.')
 args = parser.parse_args()
 
 # options needed to run()
 options = {
     'file': args.file,
-    'outputPlain': args.plain,
-    'outputJson': args.json
+    'outputPlain': args.plain
 }
 
 def main():

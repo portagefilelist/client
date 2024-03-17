@@ -10,8 +10,6 @@ e-file - Search which package does provide a file or command.
 
 **e-file** --plain *file*
 
-**e-file** --json *file*
-
 **e-file** \[-h\] \[-v\]
 
 # DESCRIPTION
@@ -25,7 +23,7 @@ The data is provided by the `pfl` command.
 
 # USAGE
 
-**e-file** \[-h\] \[-v\] \[--plain\] \[--json\] *file*
+**e-file** \[-h\] \[-v\] \[--plain\] *file*
 
 # OPTIONS
 
@@ -37,9 +35,6 @@ The data is provided by the `pfl` command.
 
 `--plain`
 :   Output in plain text.
-
-`--json`
-:   Output formatted as JSON.
 
 # EXIT STATUS
 

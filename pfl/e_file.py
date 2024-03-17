@@ -34,9 +34,8 @@ BASEURL='https://www.portagefilelist.de/query.php?file=%s'
 # options are
 # options = {
 #      'file': '',
-#      'stdout': False
+#      'stdout': False,
 #      'outputPlain': False
-#      'outputJson': False
 #  }
 # Use options['stdout'] = True if you want to run this as a script which prints the output as it happens.
 # With False the output is collected and returned, so no immediate display what is going on.
@@ -97,31 +96,27 @@ class Efile(object):
                     if len(installed_cpvs) > 0:
                         installed = True
 
-                    # *  category/package
-                    #[I] category/package
+                    # category/package
                     if installed:
                         _toPrint = colored('i', 'green')
                     else:
                         _toPrint = colored('*', 'green')
                     self.log('%s %s/%s' % (_toPrint, category, package))
 
-                    #        Seen Versions:          X.Y A.B
+                    # Seen Versions: X.Y A.B
                     versions = sorted(set(vf['versions']))
                     self.log(colored('\tSeen Versions:'.ljust(22), 'green') + '%s' % ' '.join(versions))
 
-                    #        Portage Versions:       X.Y A.B
-                    _toPrint = colored('\tPortage Versions:'.ljust(22), 'green')
+                    # Portage Versions: X.Y A.B
+                    availableVersions = []
                     for available_cpv in available_cpvs:
-                        _toPrint += portage.versions.cpv_getversion(available_cpv) + ' '
-                    self.log(_toPrint.rstrip())
+                        availableVersions.append(portage.versions.cpv_getversion(available_cpv))
+                    self.log(colored('\tPortage Versions:'.ljust(22), 'green') + '%s' % ' '.join(sorted(set(availableVersions))))
 
-                    #        Repository:             Name
+                    # Repository: Name
                     self.log(colored('\tRepository:'.ljust(22), 'green') + repo)
 
-                    # old:
-                    #        Last Installed Ver:     X.Y(Thu Apr 2 01:01:19 2020)
-                    # new:
-                    #        Installed Versions:     X.Y(Thu Apr 2 01:01:19 2020)
+                    # Installed Versions: X.Y(Thu Apr 2 01:01:19 2020)
                     if installed:
                         _toPrint = colored('\tInstalled Versions:'.ljust(22), 'green')
                         for installed_cpv in installed_cpvs:
@@ -137,13 +132,13 @@ class Efile(object):
                     if len(available_cpvs) > 0:
                         description, homepage = portdbapi.aux_get(available_cpvs[-1], ['DESCRIPTION', 'HOMEPAGE'])
 
-                        #        Homepage:               http://example.org
+                        # Homepage: http://example.org
                         self.log(colored('\tHomepage:'.ljust(22), 'green') + '%s' % homepage)
 
-                        #        Description:            package description
+                        # Description: package description
                         self.log(colored('\tDescription:'.ljust(22), 'green') + '%s' % description)
 
-                    #        Matched Files:          /the/found/file; /another/found/file;
+                    # Matched Files: /the/found/file /another/found/file;
                     files = sorted(set(vf['files']))
                     self.log(colored('\tMatched Files:'.ljust(22), 'green') + '%s' % ' '.join(files))
                     self.log('')

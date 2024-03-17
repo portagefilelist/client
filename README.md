@@ -38,7 +38,7 @@ are available.
 ## CLI Search
 
 The package does provide a cli command `e-file` to execute a search in your terminal.
-`$ e-file [-h] [-v] [--plain] [--json] file`
+`$ e-file [-h] [-v] [--plain] file`
 
 Example: `$ e-file brctl` results in
 

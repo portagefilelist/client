@@ -1,7 +1,8 @@
 pfl-3.x.x
 
 + Fixed with PR #53: The lack of whitespace with listed versions. Thx to https://github.com/parona-source
-* Added [--plain] option to e-file. Output without any fancy stuff, just plain text.
++ Fixed and improved portage versions output #54
++ Added [--plain] option to e-file. Output without any fancy stuff, just plain text.
 + Cleared text formatting in readme and man files
 
 pfl-3.5.1 - 2024-03-09
