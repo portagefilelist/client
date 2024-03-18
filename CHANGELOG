@@ -2,6 +2,7 @@ pfl-3.x.x
 
 + Fixed with PR #53: The lack of whitespace with listed versions. Thx to https://github.com/parona-source
 + Fixed and improved portage versions output #54
++ Fixed --atom option. It truncated the -rX from version numbers. Eg. 6.6.0-r3 became 6.6.0 and thus broke the lookup.
 + Added [--plain] option to e-file. Output without any fancy stuff, just plain text.
 + Changed output about installed or not. Installed version is returned every time now, but displays versions
   only if installed.

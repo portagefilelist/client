@@ -82,6 +82,8 @@ class PortageMangle(object):
             if self._vardbapi.cpv_exists(self._options['onlyPackage']):
                 # category, package, version of specific package
                 c, p, v, r = portage.versions.catpkgsplit(self._options['onlyPackage'])
+                if r != 'r0':
+                    v = '%s-%s' % (v, r)
                 cpvs = [c + '/' + p + '-' + v]
             else:
                 self.log('No such atom installed.')
