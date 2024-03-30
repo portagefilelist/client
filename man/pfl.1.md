@@ -1,4 +1,4 @@
-% PFL(1) pfl user manual | Version 3.x.x
+% PFL(1) pfl user manual | Version 3.5.2
 
 # NAME
 
@@ -90,4 +90,4 @@ e-file\(1\)
 
 # VERSION
 
-3.x.x
+3.5.2

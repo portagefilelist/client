@@ -22,7 +22,7 @@ import argparse
 # pfl module
 import pfl.e_file
 
-VERSION='3.x.x'
+VERSION='3.5.2'
 
 parser = argparse.ArgumentParser(description='This script searches on \
 https://www.portagefilelist.de for the given filename(slice.hpp) or \

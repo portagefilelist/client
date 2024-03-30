@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pfl"
-version = "3.x.x"
+version = "3.5.2"
 authors = [
     {name = "Banana", email = "mail@bananas-playground.net"},
 ]
