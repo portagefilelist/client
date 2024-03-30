@@ -1,7 +1,7 @@
 pfl-3.x.x
 
 
-pfl-3.5.2 - 2024-30-03
+pfl-3.5.2 - 2024-03-30
 
 + Fixed with PR #53: The lack of whitespace with listed versions. Thx to https://github.com/parona-source
 + Fixed and improved portage versions output #54
