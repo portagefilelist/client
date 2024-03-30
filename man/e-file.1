@@ -14,7 +14,7 @@
 . ftr VB CB
 . ftr VBI CBI
 .\}
-.TH "E-FILE" "1" "" "e-file user manual" "Version 3.5.1"
+.TH "E-FILE" "1" "" "e-file user manual" "Version 3.5.2"
 .hy
 .SH NAME
 .PP
@@ -22,6 +22,8 @@ e-file - Search which package does provide a file or command.
 .SH SYNOPSIS
 .PP
 \f[B]e-file\f[R] \f[I]file\f[R]
+.PP
+\f[B]e-file\f[R] \[en]plain \f[I]file\f[R]
 .PP
 \f[B]e-file\f[R] [-h] [-v]
 .SH DESCRIPTION
@@ -34,7 +36,7 @@ Using * as a wildcard (slice.*) (/usr/include/exiv2/*) works too.
 The data is provided by the \f[V]pfl\f[R] command.
 .SH USAGE
 .PP
-\f[B]e-file\f[R] [-h] [-v] \f[I]file\f[R]
+\f[B]e-file\f[R] [-h] [-v] [\[en]plain] \f[I]file\f[R]
 .SH OPTIONS
 .TP
 \f[V]-h, --help\f[R]
@@ -42,6 +44,9 @@ Show this help message and exit.
 .TP
 \f[V]-v, --version\f[R]
 Show version number and exit.
+.TP
+\f[V]--plain\f[R]
+Output in plain text.
 .SH EXIT STATUS
 .PP
 Nothing special yet.
@@ -54,21 +59,21 @@ Usual execution as a user: \f[V]e-file brctl\f[R] results in
 .IP
 .nf
 \f[C]
-*  app-shells/bash-completion
-        Seen Versions:          2.11
-        Portage Versions:       2.11 9999
-        Repository:             Gentoo
-        Homepage:               https://github.com/scop/bash-completion
-        Description:            Programmable Completion for bash
-        Matched Files:          /usr/share/bash-completion/completions/brctl/brctl
+* app-shells/bash-completion
+    Seen Versions:          2.11
+    Portage Versions:       2.11 9999
+    Repository:             Gentoo
+    Homepage:               https://github.com/scop/bash-completion
+    Description:            Programmable Completion for bash
+    Matched Files:          /usr/share/bash-completion/completions/brctl/brctl
 
- *  net-misc/bridge-utils
-        Seen Versions:          1.7.1-r1
-        Portage Versions:       1.7.1-r1
-        Repository:             Gentoo
-        Homepage:               http://bridge.sourceforge.net/
-        Description:            Tools for configuring the Linux kernel 802.1d Ethernet Bridge
-        Matched Files:          /sbin/brctl/brctl
+* net-misc/bridge-utils
+    Seen Versions:          1.7.1-r1
+    Portage Versions:       1.7.1-r1
+    Repository:             Gentoo
+    Homepage:               http://bridge.sourceforge.net/
+    Description:            Tools for configuring the Linux kernel 802.1d Ethernet Bridge
+    Matched Files:          /sbin/brctl/brctl
 \f[R]
 .fi
 .PP
@@ -76,22 +81,22 @@ Wildcardsearch is also possible: \f[V]e-file apache2ct*\f[R]
 .IP
 .nf
 \f[C]
-[I] www-servers/apache
-        Seen Versions:          2.2.29 2.4.34-r2 2.4.39 2.4.55-r1 2.4.57 2.4.57-r1
-        Portage Versions:       2.4.57 2.4.57-r1
-        Repository:             Gentoo
-        Installed Versions:     2.4.57(Fri Jun 23 06:43:37 2023)
-        Homepage:               https://httpd.apache.org/
-        Description:            The Apache Web Server
-        Matched Files:          /usr/sbin/apache2ctl/apache2ctl
+i www-servers/apache
+    Seen Versions:          2.2.29 2.4.34-r2 2.4.39 2.4.55-r1 2.4.57 2.4.57-r1
+    Portage Versions:       2.4.57 2.4.57-r1
+    Repository:             Gentoo
+    Installed Versions:     2.4.57(Fri Jun 23 06:43:37 2023)
+    Homepage:               https://httpd.apache.org/
+    Description:            The Apache Web Server
+    Matched Files:          /usr/sbin/apache2ctl/apache2ctl
 
- *  app-shells/bash-completion
-        Seen Versions:          2.11
-        Portage Versions:       2.11 9999
-        Repository:             Gentoo
-        Homepage:               https://github.com/scop/bash-completion
-        Description:            Programmable Completion for bash
-        Matched Files:          /usr/share/bash-completion/completions/apache2ctl/apache2ctl
+* app-shells/bash-completion
+    Seen Versions:          2.11
+    Portage Versions:       2.11 9999
+    Repository:             Gentoo
+    Homepage:               https://github.com/scop/bash-completion
+    Description:            Programmable Completion for bash
+    Matched Files:          /usr/share/bash-completion/completions/apache2ctl/apache2ctl
 \f[R]
 .fi
 .SH BUG REPORTS
@@ -110,4 +115,4 @@ License: GNU General Public License v2 (GPLv2)
 pfl(1)
 .SH VERSION
 .PP
-3.5.1
+3.5.2

@@ -29,7 +29,7 @@ import portage
 # http: dev-python/requests
 import requests
 
-VERSION = '3.5.1'
+VERSION = '3.5.2'
 UPLOADURL='https://www.portagefilelist.de/data.php'
 ALLOWED_REPOS = ['gentoo', 'guru']
 
@@ -48,7 +48,7 @@ else:
 #      'pretend': args.pretend,
 #      'stdout': False
 #  }
-# Use options['stdout'] = True if you wan to run this as a script which prints the output as it happens.
+# Use options['stdout'] = True if you want to run this as a script which prints the output as it happens.
 # With False the output is collected and returned, so no immediate display what is going on.
 def run(options):
     start = PFL(options)
@@ -72,7 +72,7 @@ class PortageMangle(object):
             raise Exception(f'Tree "{eroot}" not present.')
 
     def log(self, output):
-        if(self._options['stdout']):
+        if self._options['stdout']:
             print(output)
         else:
             self._out += output + '\n'
@@ -82,6 +82,8 @@ class PortageMangle(object):
             if self._vardbapi.cpv_exists(self._options['onlyPackage']):
                 # category, package, version of specific package
                 c, p, v, r = portage.versions.catpkgsplit(self._options['onlyPackage'])
+                if r != 'r0':
+                    v = '%s-%s' % (v, r)
                 cpvs = [c + '/' + p + '-' + v]
             else:
                 self.log('No such atom installed.')
@@ -108,7 +110,7 @@ class PortageMangle(object):
             mergedstamp = self._vardbapi.aux_get(cpv, ['_mtime_'])[0]
 
             if repo in ALLOWED_REPOS and mergedstamp >= since:
-                if (self._options['onlyRepo'] and repo != self._options['onlyRepo']):
+                if self._options['onlyRepo'] and repo != self._options['onlyRepo']:
                     continue
 
                 wellknown.setdefault(repo, {}).setdefault(c, {}).setdefault(p, []).append(v)
@@ -239,7 +241,7 @@ class PFL(object):
             return int(self._config.get('PFL', 'lastrun', fallback=0))
 
     def log(self, output):
-        if(self._options['stdout']):
+        if self._options['stdout']:
             print(output)
         else:
             self._out += output + '\n'

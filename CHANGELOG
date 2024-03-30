@@ -1,3 +1,14 @@
+pfl-3.5.2 - 2024-30-03
+
++ Fixed with PR #53: The lack of whitespace with listed versions. Thx to https://github.com/parona-source
++ Fixed and improved portage versions output #54
++ Fixed --atom option. It truncated the -rX from version numbers. Eg. 6.6.0-r3 became 6.6.0 and thus broke the lookup.
++ Added [--plain] option to e-file. Output without any fancy stuff, just plain text.
++ Changed output about installed or not. Installed version is returned every time now, but displays versions
+  only if installed.
++ Cleared text formatting in readme and man files
++ Now handles the usr-merge topic https://wiki.gentoo.org/wiki/Merge-usr
+
 pfl-3.5.1 - 2024-03-09
 
 + Fixed 51: Damn copy&pasta error. Sorry about that. Don't trust the .0 versions :-)
@@ -52,9 +63,9 @@ pfl-3.2.1 2023-07-18
 pfl-3.2 2021-10-06
 
 + python version of e-file (#7, #8)
-* Not using HOME (#10)
-* empty temp files not removed (#12)
-* run pfl script as user/group portage
++ Not using HOME (#10)
++ empty temp files not removed (#12)
++ run pfl script as user/group portage
 
 
 pfl-3.1 2020-04-12

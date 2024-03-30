@@ -22,22 +22,24 @@ import argparse
 # pfl module
 import pfl.e_file
 
-VERSION='3.5.1'
+VERSION='3.5.2'
 
 parser = argparse.ArgumentParser(description='This script searches on \
 https://www.portagefilelist.de for the given filename(slice.hpp) or \
 path(/usr/include/exiv2/slice.hpp) and displays the result \
 with further information from local portage. \
-Using * as a wildcard (slice.*) (/usr/include/exiv2/*) works too.', add_help=False)
+Using * as a wildcard (slice.*) (/usr/include/exiv2/*) works too.', add_help=False, allow_abbrev=False)
 
 parser.add_argument('-h', '--help', action='help', help='Show this help message and exit.')
 parser.add_argument('-v', '--version', action='version', version='e-file ' + VERSION)
+parser.add_argument('--plain', action='store_true', default=False, help='Output in plain text.')
 parser.add_argument('file', help='Filename or path to search for.')
 args = parser.parse_args()
 
 # options needed to run()
 options = {
-    'file': args.file
+    'file': args.file,
+    'outputPlain': args.plain
 }
 
 def main():

@@ -17,6 +17,7 @@
 import sys
 import json
 from datetime import datetime
+import re
 
 # external library
 # portage api: sys-apps/portage
@@ -26,16 +27,17 @@ from termcolor import colored
 # http: dev-python/requests
 import requests
 
-VERSION='3.5.1'
+VERSION='3.5.2'
 BASEURL='https://www.portagefilelist.de/query.php?file=%s'
 
 # the main method to run this.
 # options are
 # options = {
 #      'file': '',
-#      'stdout': False
+#      'stdout': False,
+#      'outputPlain': False
 #  }
-# Use options['stdout'] = True if you wan to run this as a script which prints the output as it happens.
+# Use options['stdout'] = True if you want to run this as a script which prints the output as it happens.
 # With False the output is collected and returned, so no immediate display what is going on.
 def run(options):
     start = Efile(options)
@@ -49,14 +51,19 @@ class Efile(object):
         self._options = options
 
     def log(self, output=''):
-        if 'stdout' in self._options and self._options['stdout'] :
+        if self._options['outputPlain']:
+            output = re.sub(r'\x1b\[[0-9;]*m','',output)
+            output = re.sub(r'\t','',output)
+            output = re.sub(r' +',' ',output)
+
+        if 'stdout' in self._options and self._options['stdout']:
             print(output)
         else:
             self._out += output + '\n'
 
     def run(self):
         ret, jsonData = self.doRequest()
-        if(jsonData):
+        if jsonData:
             cps = {}
             for file in jsonData:
                 category = file['category']
@@ -89,34 +96,25 @@ class Efile(object):
                     if len(installed_cpvs) > 0:
                         installed = True
 
-                    # *  category/package
-                    #[I] category/package
-                    _toPrint = ''
-                    if installed:
-                        _toPrint = colored('[I] ', 'green')
-                    else:
-                        _toPrint = colored(' * ', 'green')
-                    self.log('%s %s/%s' % (_toPrint, category, package))
+                    # category/package
+                    self.log('%s/%s' % (category, package))
 
-                    #        Seen Versions:          X.Y A.B
+                    # Seen Versions: X.Y A.B
                     versions = sorted(set(vf['versions']))
                     self.log(colored('\tSeen Versions:'.ljust(22), 'green') + '%s' % ' '.join(versions))
 
-                    #        Portage Versions:       X.Y A.B
-                    _toPrint = colored('\tPortage Versions:'.ljust(22), 'green')
+                    # Portage Versions: X.Y A.B
+                    availableVersions = []
                     for available_cpv in available_cpvs:
-                        _toPrint += portage.versions.cpv_getversion(available_cpv)
-                    self.log(_toPrint)
+                        availableVersions.append(portage.versions.cpv_getversion(available_cpv))
+                    self.log(colored('\tPortage Versions:'.ljust(22), 'green') + '%s' % ' '.join(sorted(set(availableVersions))))
 
-                    #        Repository:             Name
+                    # Repository: Name
                     self.log(colored('\tRepository:'.ljust(22), 'green') + repo)
 
-                    # old:
-                    #        Last Installed Ver:     X.Y(Thu Apr 2 01:01:19 2020)
-                    # new:
-                    #        Installed Versions:     X.Y(Thu Apr 2 01:01:19 2020)
+                    # Installed Versions: X.Y(Thu Apr 2 01:01:19 2020)
+                    _toPrint = colored('\tInstalled Versions:'.ljust(22), 'green')
                     if installed:
-                        _toPrint = colored('\tInstalled Versions:'.ljust(22), 'green')
                         for installed_cpv in installed_cpvs:
                             build_time, = vardbapi.aux_get(installed_cpv, ['BUILD_TIME'])
                             try:
@@ -125,20 +123,22 @@ class Efile(object):
                                 build_time = 0
                             _toPrint += colored(portage.versions.cpv_getversion(installed_cpv), 'white', 'on_blue')
                             _toPrint += colored(datetime.fromtimestamp(build_time).strftime('(%c) '), 'magenta')
-                        self.log(_toPrint)
+                    else:
+                        _toPrint += "-"
+                    self.log(_toPrint)
 
                     if len(available_cpvs) > 0:
                         description, homepage = portdbapi.aux_get(available_cpvs[-1], ['DESCRIPTION', 'HOMEPAGE'])
 
-                        #        Homepage:               http://example.org
+                        # Homepage: http://example.org
                         self.log(colored('\tHomepage:'.ljust(22), 'green') + '%s' % homepage)
 
-                        #        Description:            package description
+                        # Description: package description
                         self.log(colored('\tDescription:'.ljust(22), 'green') + '%s' % description)
 
-                    #        Matched Files:          /the/found/file; /another/found/file;
+                    # Matched Files: /the/found/file /another/found/file;
                     files = sorted(set(vf['files']))
-                    self.log(colored('\tMatched Files:'.ljust(22), 'green') + '%s' % '; '.join(files))
+                    self.log(colored('\tMatched Files:'.ljust(22), 'green') + '%s' % ' '.join(files))
                     self.log('')
 
             return 0, self._out
