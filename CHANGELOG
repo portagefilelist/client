@@ -1,4 +1,6 @@
-pfl-3.x.x
+pfl-3.5.3 - TBD
+
++ pfl.service: use (After|Wants)=network-online.target. Thx to https://github.com/Flowdalic
 
 
 pfl-3.5.2 - 2024-03-30
