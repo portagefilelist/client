@@ -27,7 +27,7 @@ import portage
 # pfl module
 import pfl.pfl
 
-VERSION = '3.5.3'
+VERSION = '3.x.x'
 ALLOWED_REPOS = ['gentoo', 'guru']
 
 parser = argparse.ArgumentParser(description='This is the PFL upload script. \
