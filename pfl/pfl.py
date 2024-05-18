@@ -29,7 +29,7 @@ import portage
 # http: dev-python/requests
 import requests
 
-VERSION = '3.x.x'
+VERSION = '3.5.3'
 UPLOADURL='https://www.portagefilelist.de/data.php'
 ALLOWED_REPOS = ['gentoo', 'guru']
 
