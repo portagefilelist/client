@@ -1,5 +1,7 @@
 pfl-3.x.x TBD
 
++ Added python 3.12 notice to project.toml. It is already 3.12 compatible.
+
 pfl-3.5.3 - 2024-05-18
 
 + pfl.service: use (After|Wants)=network-online.target. Thx to https://github.com/Flowdalic
