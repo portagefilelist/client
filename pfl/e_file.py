@@ -29,6 +29,7 @@ import requests
 
 VERSION='3.x.x'
 BASEURL='https://www.portagefilelist.de/query.php?file=%s'
+BASEURL_PACKAGE='https://www.portagefilelist.de/query.php?package=%s'
 
 # the main method to run this.
 # options are
@@ -36,6 +37,7 @@ BASEURL='https://www.portagefilelist.de/query.php?file=%s'
 #      'file': '',
 #      'stdout': False,
 #      'outputPlain': False
+#      'packageSearch': False
 #  }
 # Use options['stdout'] = True if you want to run this as a script which prints the output as it happens.
 # With False the output is collected and returned, so no immediate display what is going on.
@@ -150,7 +152,10 @@ class Efile(object):
 
     def doRequest(self):
         try:
-            r = requests.get(BASEURL % self._options['file'])
+            if self._options['packageSearch']:
+                r = requests.get(BASEURL_PACKAGE % self._options['file'])
+            else:
+                r = requests.get(BASEURL % self._options['file'])
             r.raise_for_status()
         except requests.exceptions.HTTPError as e:
             self.log("An HTTP error occured")

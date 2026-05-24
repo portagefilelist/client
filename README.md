@@ -38,11 +38,12 @@ are available.
 ## CLI Search
 
 The package does provide a cli command `e-file` to execute a search in your terminal.
-`$ e-file [-h] [-v] [--plain] file`
+`$ e-file [-h] [-v] [-p] [--plain] file`
 
 Example: `$ e-file brctl` results in
 
 ```
+$ e-file brctl
 * app-shells/bash-completion
     Seen Versions:          2.11
     Portage Versions:       2.11 9999
@@ -82,7 +83,48 @@ i www-servers/apache
     Matched Files:          /usr/share/bash-completion/completions/apache2ctl/apache2ctl
 ```
 
-The e-file does only provide searching for packages with a filename. More options are available with the browser search.
+Searching for a packagename instead with the given string.
+
+```
+$ e-file -p http
+acct-group/http
+    Seen Versions:       0-r2
+    Portage Versions:    0-r2
+    Repository:          gentoo
+    Installed Versions:  -
+    Homepage:
+    Description:         System group: http
+    Matched Files:
+
+acct-user/http
+    Seen Versions:       0-r2
+    Portage Versions:    0-r2
+    Repository:          gentoo
+    Installed Versions:  -
+    Homepage:
+    Description:         A user for www-servers/caddy
+    Matched Files:
+
+dev-ruby/http
+    Seen Versions:       5.3.0 5.3.1
+    Portage Versions:    5.3.0 5.3.1
+    Repository:          gentoo
+    Installed Versions:  -
+    Homepage:            https://github.com/httprb/http
+    Description:         An easy-to-use client library for making requests from Ruby
+    Matched Files:
+
+dev-haskell/http
+    Seen Versions:       4000.4.1-r1
+    Portage Versions:    4000.4.1-r1
+    Repository:          gentoo
+    Installed Versions:  -
+    Homepage:            https://github.com/haskell/HTTP
+    Description:         A library for client-side HTTP
+    Matched Files:
+```
+
+More options are available with the [browser search](https://www.portagefilelist.de).
 
 ## Browser Search
 
