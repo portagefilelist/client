@@ -108,6 +108,10 @@ class PortageMangle(object):
 
             # timestamp of merge
             mergedstamp = self._vardbapi.aux_get(cpv, ['_mtime_'])[0]
+            # Some installs started to create float timestamp
+            # I don't know why it was not float already all the time
+            # Something in the creation of _mtime_ must have been changed
+            mergedstamp = int(round(mergedstamp))
 
             if repo in ALLOWED_REPOS and mergedstamp >= since:
                 if self._options['onlyRepo'] and repo != self._options['onlyRepo']:
@@ -159,6 +163,10 @@ class PortageMangle(object):
                             continue
 
                         mergedstamp = self._vardbapi.aux_get('%s/%s-%s' % (c, p, v), ['_mtime_'])[0]
+                        # Some installs started to create float timestamp
+                        # I don't know why it was not float already all the time
+                        # Something in the creation of _mtime_ must have been changed
+                        mergedstamp = int(round(mergedstamp))
 
                         use = self._vardbapi.aux_get('%s/%s-%s' % (c, p, v), ['USE'])[0].split()
                         iuse = self._vardbapi.aux_get('%s/%s-%s' % (c, p, v), ['IUSE'])[0].split()
@@ -276,11 +284,18 @@ class PFL(object):
             toClean.append(fileToUpload)
 
             try:
-                self.log('uploading file {} to {} ...'.format(fileToUpload, UPLOADURL))
+                self.log('Uploading file {} to {} ...'.format(fileToUpload, UPLOADURL))
                 files = {'foo': open(fileToUpload, 'rb')}
                 r = requests.post(UPLOADURL, files=files)
-                self.log('HTTP Response Code: {}'.format(r.status_code))
-                self.log('HTTP Response Body: {}'.format(r.text))
+                if r.status_code == 200:
+                    self.log('Upload successful')
+                    self.log('{}'.format(r.text))
+                else:
+                    self.log('Error: Upload was not successful')
+                    self.log('HTTP Response Code: {}'.format(r.status_code))
+                    self.log('HTTP Response Body: {}'.format(r.text))
+                    self._finish(toClean, False)
+                    return 1, self._out
             except Exception as e:
                 sys.stderr.write("%s\n" % e)
                 self._finish(toClean, False)
