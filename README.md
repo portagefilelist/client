@@ -83,7 +83,7 @@ i www-servers/apache
     Matched Files:          /usr/share/bash-completion/completions/apache2ctl/apache2ctl
 ```
 
-Searching for a packagename instead with the given string.
+Searching for a packagename with a given string. `$ e-file -p brctl`
 
 ```
 $ e-file -p http
@@ -131,11 +131,17 @@ More options are available with the [browser search](https://www.portagefilelist
 Searching through the user provided uploads for a package, package itself and categories is available 
 [at the website itself](https://www.portagefilelist.de/).
 
-## Useful Portage tools
+# Useful Portage tools
 
 The Gentoo wiki does provide a good list of [further tools about portage](https://wiki.gentoo.org/wiki/Useful_Portage_tools).
 
-## Used by
+# Used by
 
 [Command-not-found handler for Gentoo systems](https://github.com/AndrewAmmerlaan/command-not-found-gentoo) uses pfl e-file search 
 to suggest packages, if it is installed.
+
+# Development notes
+
+This is a collection of some unsorted development notes.
+
+Testing: `PYTHONPATH="." bin/pfl -p`

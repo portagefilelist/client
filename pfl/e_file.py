@@ -27,7 +27,7 @@ from termcolor import colored
 # http: dev-python/requests
 import requests
 
-VERSION='3.x.x'
+VERSION='3.6.0'
 BASEURL='https://www.portagefilelist.de/query.php?file=%s'
 BASEURL_PACKAGE='https://www.portagefilelist.de/query.php?package=%s'
 

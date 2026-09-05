@@ -1,4 +1,4 @@
-% E-FILE(1) e-file user manual | Version 3.x.x
+% E-FILE(1) e-file user manual | Version 3.6.0
 
 # NAME
 
@@ -23,7 +23,7 @@ The data is provided by the `pfl` command.
 
 # USAGE
 
-**e-file** \[-h\] \[-v\] \[--plain\] *file*
+**e-file** \[-h\] \[-v\] \[-p\] \[--plain\] *file*
 
 # OPTIONS
 
@@ -32,6 +32,9 @@ The data is provided by the `pfl` command.
 
 `-v, --version`
 :   Show version number and exit.
+
+`-p, --package`
+:   Search for a packname.
 
 `--plain`
 :   Output in plain text.
@@ -86,13 +89,35 @@ i www-servers/apache
     Matched Files:          /usr/share/bash-completion/completions/apache2ctl/apache2ctl
 ```
 
+Searching for a packagename with a given string. `$ e-file -p http`
+
+```
+acct-group/http
+    Seen Versions:       0-r2
+    Portage Versions:    0-r2
+    Repository:          gentoo
+    Installed Versions:  -
+    Homepage:
+    Description:         System group: http
+    Matched Files:
+    
+acct-user/http
+    Seen Versions:       0-r2
+    Portage Versions:    0-r2
+    Repository:          gentoo
+    Installed Versions:  -
+    Homepage:
+    Description:         A user for www-servers/caddy
+    Matched Files:
+```
+
 # BUG REPORTS
 
 Report to https://github.com/portagefilelist/client/issue
 
 # COPYRIGHT
 
-2023-2024 Banana mail@bananas-playground.net
+2023-2026 Banana mail@bananas-playground.net
 
 ?-2023 D. Buschke - Original creator
 
@@ -104,4 +129,4 @@ pfl\(1\)
 
 # VERSION
 
-3.x.x
+3.6.0
