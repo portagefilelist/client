@@ -22,7 +22,7 @@ import argparse
 # pfl module
 import pfl.e_file
 
-VERSION='3.5.3'
+VERSION='3.6.0'
 
 parser = argparse.ArgumentParser(description='This script searches on \
 https://www.portagefilelist.de for the given filename(slice.hpp) or \
@@ -32,6 +32,7 @@ Using * as a wildcard (slice.*) (/usr/include/exiv2/*) works too.', add_help=Fal
 
 parser.add_argument('-h', '--help', action='help', help='Show this help message and exit.')
 parser.add_argument('-v', '--version', action='version', version='e-file ' + VERSION)
+parser.add_argument('-p', '--package', action='store_true', default=False, help='Search for packname.')
 parser.add_argument('--plain', action='store_true', default=False, help='Output in plain text.')
 parser.add_argument('file', help='Filename or path to search for.')
 args = parser.parse_args()
@@ -39,7 +40,8 @@ args = parser.parse_args()
 # options needed to run()
 options = {
     'file': args.file,
-    'outputPlain': args.plain
+    'outputPlain': args.plain,
+    'packageSearch': args.package
 }
 
 def main():

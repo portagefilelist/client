@@ -1,3 +1,9 @@
+pfl-3.6.0 2026-09-05
+
++ Added new option to e-file. '-p', '--package', Search for packname instead.
++ Added python 3.13 and 3.14 notice to project.toml.
++ Fixed #65. Verbosity is too high
+
 pfl-3.5.3 - 2024-05-18
 
 + pfl.service: use (After|Wants)=network-online.target. Thx to https://github.com/Flowdalic

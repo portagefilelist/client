@@ -1,4 +1,4 @@
-% PFL(1) pfl user manual | Version 3.5.3
+% PFL(1) pfl user manual | Version 3.6.0
 
 # NAME
 
@@ -78,7 +78,7 @@ Report to https://github.com/portagefilelist/client/issue
 
 # COPYRIGHT
 
-2023-2024 Banana mail@bananas-playground.net
+2023-2026 Banana mail@bananas-playground.net
 
 ?-2023 D. Buschke - Original creator
 
@@ -90,4 +90,4 @@ e-file\(1\)
 
 # VERSION
 
-3.5.3
+3.6.0

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pfl"
-version = "3.5.3"
+version = "3.6.0"
 authors = [
     {name = "Banana", email = "mail@bananas-playground.net"},
 ]
@@ -13,8 +13,9 @@ keywords = ["gentoo"]
 classifiers = [
     "Natural Language :: English",
     "Topic :: System :: Operating System Kernels :: Linux",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
 ]
 license = {text = "GNU General Public License v2"}
